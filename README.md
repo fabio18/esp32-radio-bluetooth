@@ -191,28 +191,59 @@ Saída de Áudio (FM ou amplificador)
 
 ## Como Compilar e Gravar
 
-### Pré-requisitos
+### Opção 1: PlatformIO (recomendado)
 
-1. Instale o [PlatformIO](https://platformio.org/install)
-2. Clone este repositório
-
-### Compilar
+**Pré-requisitos:** Instale o [PlatformIO](https://platformio.org/install)
 
 ```bash
+# Compilar
 pio run
-```
 
-### Gravar no ESP32
-
-```bash
+# Gravar no ESP32
 pio run --target upload
-```
 
-### Monitor Serial
-
-```bash
+# Monitor Serial
 pio device monitor
 ```
+
+> As bibliotecas são instaladas automaticamente pelo PlatformIO.
+
+### Opção 2: Arduino IDE
+
+**Pré-requisitos:**
+
+1. Instale o [Arduino IDE](https://www.arduino.cc/en/software) (1.8.x ou 2.x)
+2. Adicione o suporte ESP32:
+   - Vá em **Arquivo → Preferências**
+   - Em "URLs Adicionais para Gerenciadores de Placas" adicione:
+     ```
+     https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+     ```
+   - Vá em **Ferramentas → Placa → Gerenciador de Placas**
+   - Pesquise "ESP32" e instale **esp32 by Espressif Systems**
+
+3. Instale as bibliotecas (**Sketch → Incluir Biblioteca → Gerenciar Bibliotecas**):
+   - **TFT_eSPI** by Bodmer
+   - **FastLED** by Daniel Garcia
+   - **ESP32-A2DP** by Phil Schatzmann
+
+4. **IMPORTANTE** — Configure o TFT_eSPI:
+   - Copie o arquivo `arduino/esp32_radio_bluetooth/User_Setup.h`
+   - Cole na pasta da biblioteca TFT_eSPI (substituindo o existente):
+     - **Windows:** `Documentos/Arduino/libraries/TFT_eSPI/User_Setup.h`
+     - **Mac:** `~/Documents/Arduino/libraries/TFT_eSPI/User_Setup.h`
+     - **Linux:** `~/Arduino/libraries/TFT_eSPI/User_Setup.h`
+
+5. Abra o arquivo `arduino/esp32_radio_bluetooth/esp32_radio_bluetooth.ino`
+
+6. Configure a placa em **Ferramentas**:
+   - **Placa:** ESP32 Dev Module
+   - **Partition Scheme:** Huge APP (3MB No OTA/1MB SPIFFS)
+   - **Upload Speed:** 921600
+   - **Flash Size:** 4MB
+   - **Porta:** selecione a porta COM do ESP32
+
+7. Clique em **Upload** (→)
 
 ---
 
@@ -302,6 +333,10 @@ Se o toque não estiver preciso, ative a calibração:
 
 ```
 esp32-radio-bluetooth/
+├── arduino/                    # Versão Arduino IDE
+│   └── esp32_radio_bluetooth/
+│       ├── esp32_radio_bluetooth.ino  # Sketch completo (arquivo único)
+│       └── User_Setup.h               # Config TFT_eSPI (copiar para a lib)
 ├── platformio.ini          # Configuração PlatformIO + TFT + Touch
 ├── include/
 │   ├── config.h            # Pinos, cores Pioneer, constantes
