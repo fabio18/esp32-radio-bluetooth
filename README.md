@@ -1,6 +1,8 @@
-# ESP32 Radio Bluetooth com Alexa
+# ESP32 Radio Bluetooth com Alexa — Pioneer Style
 
 Rádio FM com Bluetooth para conectar com a **Amazon Alexa** usando ESP32.
+Interface visual estilo **Pioneer automotivo** com controle 100% pela **tela touch**.
+**LED WS2812B reativo ao som** com 5 efeitos visuais!
 
 ## Componentes
 
@@ -8,18 +10,73 @@ Rádio FM com Bluetooth para conectar com a **Amazon Alexa** usando ESP32.
 |---|---|
 | **ESP32 DevKit** | Microcontrolador com Wi-Fi e Bluetooth |
 | **TEA5767** | Módulo Rádio FM Estéreo (76-108 MHz) com antena |
-| **ILI9341 TFT 2.4"** | Display 240x320 V1.3 |
-| Amplificador de áudio | PAM8403 ou similar (para saída de som) |
-| Alto-falantes | 2x 3W 4Ω (estéreo) ou 1x (mono) |
-| Botões | 6x push buttons (ou encoder rotativo) |
+| **ILI9341 TFT 2.4"** | Display 240x320 V1.3 **com touch XPT2046** |
+| DAC I2S | MAX98357A ou PCM5102 (saída de áudio BT) |
+| **WS2812B** | Fita LED endereçável (30 LEDs) reativa ao som |
+| Amplificador | PAM8403 ou similar (saída de áudio FM) |
+| Alto-falantes | 2x 3W 4Ω (estéreo) |
 
-## Funcionalidades
+> **Sem botões físicos!** Tudo é controlado pela tela touch.
 
-- **Modo FM**: Sintoniza estações FM (76-108 MHz) com busca automática e presets
-- **Modo Bluetooth**: Recebe áudio da Alexa via Bluetooth A2DP
-- **Interface gráfica**: Display TFT colorido com informações em tempo real
-- **Controles**: Botões físicos para seek, preset, volume, mute e troca de modo
-- **Encoder rotativo**: Sintonia fina em FM / ajuste de volume em BT (opcional)
+## Visual Pioneer
+
+Interface inspirada em rádios automotivos Pioneer/Kenwood:
+
+- Fundo escuro com cores **neon cyan/blue**
+- Frequência em **dígitos grandes** com efeito glow
+- **Equalizador animado** com barras de espectro coloridas
+- Botões touch com **bordas luminosas** estilo automotivo
+- Barra de volume com gradiente de cor
+- Medidor de sinal estilo LED
+- Indicadores STEREO/MONO
+- Preset strip com navegação por toque
+- **Fita LED WS2812B** reativa ao áudio com 5 efeitos
+
+### Layout da Tela FM
+```
+┌─────────────────────────────┐
+│ ESP32 RADIO          [FM]   │  Header
+├─────────────────────────────┤
+│ STEREO          SIG ▮▮▮▮▯  │  Status
+├─────────────────────────────┤
+│                             │
+│        101.1                │  Frequência (grande, cyan)
+│        FM MHz               │
+│                             │
+│  ▎▌█▌▎█▌▎▌█▎▌▎█▌▎█        │  EQ Visualizer
+├─────────────────────────────┤
+│     P3/10  93.7 MHz         │  Preset
+├─────────────────────────────┤
+│ [<<SEEK] [<P] [P>] [SEEK>>]│  Controles Seek/Preset
+│ [VOL -]  [MUTE]   [VOL +]  │  Volume/Mute
+│ [LED: VU METER] [BRILHO]   │  LED Controls
+│ [═══════ BLUETOOTH ════════]│  Trocar modo
+├─────────────────────────────┤
+│ ████████████░░░░░░░░░  80   │  Volume slider
+└─────────────────────────────┘
+```
+
+### Layout da Tela Bluetooth
+```
+┌─────────────────────────────┐
+│ ESP32 RADIO          [BT]   │  Header
+├─────────────────────────────┤
+│          ╭────╮             │
+│          │ BT │             │  Ícone BT com glow
+│          ╰────╯             │
+│       CONECTADO             │
+│         Alexa               │
+│      >> TOCANDO >>          │
+│  ▎▌█▌▎█▌▎▌█▎▌▎█▌▎█        │  EQ Visualizer
+├─────────────────────────────┤
+│ [══════ > TOCAR ═══════════]│  Play/Pause
+│ [VOL -]  [MUTE]   [VOL +]  │  Volume/Mute
+│ [LED: VU METER] [BRILHO]   │  LED Controls
+│ [═══════ FM RADIO ═════════]│  Trocar modo
+├─────────────────────────────┤
+│ ████████████░░░░░░░░░  80   │  Volume slider
+└─────────────────────────────┘
+```
 
 ---
 
@@ -36,53 +93,28 @@ VCC    ───── 3.3V
 GND    ───── GND
 ```
 
-### ILI9341 TFT → ESP32 (SPI)
+### ILI9341 TFT + Touch → ESP32 (SPI)
 
 ```
-ILI9341      ESP32
-───────      ─────
-MOSI   ───── GPIO 23
-MISO   ───── GPIO 19
-SCK    ───── GPIO 18
-CS     ───── GPIO 15
-DC     ───── GPIO  2
-RST    ───── GPIO  4
-LED    ───── 3.3V (ou GPIO para controle de brilho)
+ILI9341      ESP32         Função
+───────      ─────         ──────
+MOSI   ───── GPIO 23       SPI Data (compartilhado)
+MISO   ───── GPIO 19       SPI Data (compartilhado)
+SCK    ───── GPIO 18       SPI Clock (compartilhado)
+CS     ───── GPIO 15       Chip Select Display
+DC     ───── GPIO  2       Data/Command
+RST    ───── GPIO  4       Reset
+LED    ───── 3.3V          Backlight
+T_CS   ───── GPIO 27       Chip Select Touch (XPT2046)
+T_IRQ  ───── GPIO 34       Touch Interrupt (opcional)
 VCC    ───── 3.3V
 GND    ───── GND
 ```
 
-### Botões → ESP32 (Pull-up interno)
+> O display e o touch compartilham o barramento SPI (MOSI, MISO, SCK).
+> Cada um tem seu próprio CS (Chip Select).
 
-```
-Botão            ESP32         Função
-─────            ─────         ──────
-BTN_MODE    ──── GPIO 35      Alternar FM / Bluetooth
-BTN_SEEK+   ──── GPIO 34      Buscar estação (FM) / Vol+ (BT)
-BTN_SEEK-   ──── GPIO 32      Buscar estação (FM) / Vol- (BT)
-BTN_MUTE    ──── GPIO 33      Mudo (ambos modos)
-BTN_PRESET+ ──── GPIO 25      Próximo preset (FM)
-BTN_PRESET- ──── GPIO 26      Preset anterior (FM)
-```
-
-> **Nota:** GPIO 34 e 35 não possuem pull-up interno no ESP32.
-> Use resistores de 10kΩ pull-up externos nesses pinos.
-
-### Encoder Rotativo (Opcional)
-
-```
-Encoder      ESP32
-───────      ─────
-CLK    ───── GPIO 27
-DT     ───── GPIO 14
-SW     ───── GPIO 12
-VCC    ───── 3.3V
-GND    ───── GND
-```
-
-### Saída de Áudio I2S (DAC externo)
-
-Para Bluetooth, o áudio é transmitido via I2S. Use um DAC como MAX98357A ou PCM5102:
+### DAC I2S (Saída de Áudio Bluetooth)
 
 ```
 DAC I2S      ESP32
@@ -94,21 +126,37 @@ VCC    ───── 3.3V/5V
 GND    ───── GND
 ```
 
-### Saída de Áudio FM (TEA5767)
-
-O TEA5767 tem saídas analógicas de áudio. Conecte a um amplificador:
+### WS2812B LED Strip
 
 ```
-TEA5767         Amplificador (PAM8403)
-───────         ──────────────────────
-Audio L  ─────  Left Input
-Audio R  ─────  Right Input
-GND      ─────  GND
+WS2812B      ESP32
+───────      ─────
+DIN    ───── GPIO 13       Data (com resistor 330Ω)
+VCC    ───── 5V            Alimentação (usar fonte externa para >10 LEDs)
+GND    ───── GND           Compartilhado com ESP32
 ```
 
----
+### Entrada de Áudio para LEDs (Divisor de Tensão)
 
-## Diagrama Completo
+```
+Saída de Áudio (FM ou amplificador)
+     │
+  [10kΩ]
+     │
+     ├───── GPIO 36 (VP - ADC)
+     │
+  [10kΩ]
+     │
+  [100nF] capacitor para filtrar ruído
+     │
+    GND
+```
+
+> Conecte a saída de áudio (após o amplificador) ao divisor de tensão.
+> O capacitor de 100nF filtra ruído de alta frequência.
+> GPIO 36 (VP) é ADC1_CH0, sem conflito com Wi-Fi/BT.
+
+### Diagrama Completo
 
 ```
                     ┌─────────────────────┐
@@ -117,27 +165,25 @@ GND      ─────  GND
    TEA5767 ────I2C──┤ GPIO21(SDA)         │
    (FM Radio)       │ GPIO22(SCL)         │
                     │                     │
-   ILI9341 ───SPI──┤ GPIO23(MOSI)        │
-   (Display)        │ GPIO19(MISO)        │
-                    │ GPIO18(SCK)         │
-                    │ GPIO15(CS)          │
+   ILI9341 ───SPI──┤ GPIO23(MOSI)        │── compartilhado
+   (Display)        │ GPIO19(MISO)        │── com touch
+                    │ GPIO18(SCK)         │── XPT2046
+                    │ GPIO15(CS Display)  │
                     │ GPIO2 (DC)          │
                     │ GPIO4 (RST)         │
                     │                     │
-   Buttons ────────┤ GPIO35(MODE)        │
-                    │ GPIO34(SEEK+)       │
-                    │ GPIO32(SEEK-)       │
-                    │ GPIO33(MUTE)        │
-                    │ GPIO25(PRESET+)     │
-                    │ GPIO26(PRESET-)     │
+   XPT2046 ────────┤ GPIO27(CS Touch)    │
+   (Touch)          │ GPIO34(IRQ)         │
                     │                     │
-   Encoder ────────┤ GPIO27(CLK)         │
-   (Opcional)       │ GPIO14(DT)          │
-                    │ GPIO12(SW)          │
-                    │                     │
-   DAC I2S  ───────┤ GPIO5 (BCLK)       │──── Amplificador
-   (BT Audio)       │ GPIO17(LRC)         │──── Alto-falantes
+   DAC I2S  ───────┤ GPIO5 (BCLK)       │
+   (BT Audio)       │ GPIO17(LRC)         │
                     │ GPIO16(DOUT)        │
+                    │                     │
+   WS2812B ────────┤ GPIO13(LED Data)    │
+   (LED Strip)      │                     │
+                    │                     │
+   Audio In ───ADC──┤ GPIO36(VP - ADC)    │
+   (Divisor)        │                     │
                     └─────────────────────┘
 ```
 
@@ -174,43 +220,81 @@ pio device monitor
 
 ### Primeiro Boot
 
-1. Ao ligar, a tela de splash é exibida
-2. O rádio inicia no **modo FM** na frequência padrão (101.1 MHz)
-3. Use os botões para controlar
+1. Tela de splash com logo "ESP32 RADIO" estilo Pioneer
+2. Inicia automaticamente no **modo FM** (101.1 MHz)
+3. Toque na tela para controlar
 
-### Controles - Modo FM
+### Controles Touch — Modo FM
 
-| Botão | Função |
+| Botão na tela | Função |
 |---|---|
-| **MODE** | Alternar para Bluetooth |
-| **SEEK+** | Buscar próxima estação |
-| **SEEK-** | Buscar estação anterior |
+| **<< SEEK** | Buscar estação anterior |
+| **SEEK >>** | Buscar próxima estação |
+| **<P** | Preset anterior |
+| **P>** | Próximo preset |
+| **VOL -** | Diminuir volume |
+| **VOL +** | Aumentar volume |
 | **MUTE** | Ligar/desligar mudo |
-| **PRESET+** | Próximo preset salvo |
-| **PRESET-** | Preset anterior |
-| **Encoder** | Sintonia fina (±0.1 MHz) |
+| **VU METER** (LED) | Trocar efeito LED: OFF → VU → SPECTRUM → PULSE → RAINBOW → FIRE |
+| **BRILHO** | Ciclar brilho LED: 50 → 100 → 150 → 200 → 250 |
+| **BLUETOOTH** | Trocar para modo BT |
 
-### Controles - Modo Bluetooth
+### Controles Touch — Modo Bluetooth
 
-| Botão | Função |
+| Botão na tela | Função |
 |---|---|
-| **MODE** | Alternar para FM |
-| **SEEK+** | Aumentar volume |
-| **SEEK-** | Diminuir volume |
+| **> TOCAR / \|\| PAUSAR** | Play/Pause |
+| **VOL -** | Diminuir volume |
+| **VOL +** | Aumentar volume |
 | **MUTE** | Ligar/desligar mudo |
-| **Encoder** | Ajustar volume |
+| **VU METER** (LED) | Trocar efeito LED |
+| **BRILHO** | Ciclar brilho LED |
+| **FM RADIO** | Trocar para modo FM |
 
 ### Conectar com Alexa
 
-1. Pressione **MODE** para entrar no modo Bluetooth
-2. No display aparecerá "Aguardando..."
-3. No app Alexa (celular):
-   - Vá em **Dispositivos** → **Echo & Alexa**
-   - Selecione seu dispositivo Echo
-   - **Configurações Bluetooth** → **Parear novo dispositivo**
+1. Toque em **BLUETOOTH** para entrar no modo BT
+2. Na tela aparecerá "AGUARDANDO..."
+3. No app Alexa:
+   - **Dispositivos** → **Echo & Alexa** → seu Echo
+   - **Bluetooth** → **Parear novo dispositivo**
    - Selecione **"ESP32 Radio"**
-4. Após conectar, o display mostrará "Conectado"
-5. Diga: *"Alexa, toque música"* — o áudio sairá pelo ESP32!
+4. Após conectar, a tela mostrará "CONECTADO"
+5. Diga: *"Alexa, toque música"* — o áudio sai pelo ESP32!
+6. O equalizador animado responde ao áudio
+7. A fita LED WS2812B também reage ao som!
+
+### Efeitos LED WS2812B
+
+| Efeito | Descrição |
+|---|---|
+| **OFF** | LEDs desligados |
+| **VU METER** | Barra verde → amarelo → vermelho (tipo medidor de volume) |
+| **SPECTRUM** | Espectro de cores que muda com o áudio |
+| **PULSE** | Pulso de cor que detecta batidas |
+| **RAINBOW** | Arco-íris cuja velocidade e brilho reagem ao som |
+| **FIRE** | Efeito fogo modulado pelo áudio |
+
+---
+
+## Calibração do Touch
+
+Se o toque não estiver preciso, ative a calibração:
+
+1. No código `setup()` em `main.cpp`, descomente a linha:
+   ```cpp
+   display.calibrateTouch();
+   ```
+2. Grave novamente no ESP32
+3. Toque nos 4 cantos quando solicitado
+4. Os valores de calibração serão exibidos no Serial Monitor
+5. Atualize os valores em `config.h`:
+   ```cpp
+   #define TOUCH_MIN_X     <valor1>
+   #define TOUCH_MAX_X     <valor2>
+   #define TOUCH_MIN_Y     <valor3>
+   #define TOUCH_MAX_Y     <valor4>
+   ```
 
 ---
 
@@ -218,63 +302,70 @@ pio device monitor
 
 ```
 esp32-radio-bluetooth/
-├── platformio.ini          # Configuração PlatformIO
+├── platformio.ini          # Configuração PlatformIO + TFT + Touch
 ├── include/
-│   ├── config.h            # Definições de pinos e constantes
-│   ├── display_ui.h        # Interface gráfica do display
-│   └── bt_audio.h          # Módulo Bluetooth A2DP
+│   ├── config.h            # Pinos, cores Pioneer, constantes
+│   ├── display_ui.h        # Interface Pioneer + Touch
+│   ├── bt_audio.h          # Bluetooth A2DP Sink
+│   └── led_effects.h       # Efeitos LED WS2812B
 ├── lib/
 │   └── TEA5767/
-│       ├── TEA5767.h        # Driver do módulo FM
+│       ├── TEA5767.h        # Driver FM
 │       └── TEA5767.cpp
 ├── src/
-│   ├── main.cpp            # Firmware principal
-│   ├── display_ui.cpp      # Implementação da UI
-│   └── bt_audio.cpp        # Implementação do Bluetooth
+│   ├── main.cpp            # Firmware principal (touch + LED)
+│   ├── display_ui.cpp      # UI Pioneer + EQ Visualizer + Touch
+│   ├── bt_audio.cpp        # Bluetooth A2DP
+│   └── led_effects.cpp     # Efeitos LED reativos ao som
 └── docs/
-    └── wiring.md           # Diagrama de conexões detalhado
+    └── wiring.md           # Conexões detalhadas
 ```
 
 ## Dependências
 
 | Biblioteca | Versão | Uso |
 |---|---|---|
-| [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) | ^2.5.34 | Display ILI9341 |
+| [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) | ^2.5.34 | Display ILI9341 + Touch XPT2046 |
 | [ESP32-A2DP](https://github.com/pschatzmann/ESP32-A2DP) | v1.8.0 | Bluetooth A2DP Sink |
+| [FastLED](https://github.com/FastLED/FastLED) | ^3.6.0 | WS2812B LED strip |
 
 ## Customização
 
 ### Alterar nome Bluetooth
-
 Em `include/config.h`:
 ```cpp
-#define BT_DEVICE_NAME  "Meu Radio"
+#define BT_DEVICE_NAME  "Meu Radio Pioneer"
 ```
 
-### Alterar presets FM padrão
-
+### Alterar presets FM
 Em `lib/TEA5767/TEA5767.cpp`, no construtor:
 ```cpp
-float defaultPresets[] = {
-    89.1, 91.3, 93.7, 96.1, 98.3, 100.9, 101.1, 103.3, 105.1, 107.5
-};
+float defaultPresets[] = { 89.1, 91.3, 93.7, 96.1, 98.3, 100.9, 101.1, 103.3, 105.1, 107.5 };
 ```
 
-### Alterar cores da interface
-
+### Alterar cores
 Em `include/config.h`, modifique as constantes `COLOR_*` (formato RGB565).
+Cores neon para estilo Pioneer: `COLOR_NEON_CYAN`, `COLOR_NEON_BLUE`, `COLOR_NEON_GREEN`.
 
-### Alterar pinos
-
-Todos os pinos são configuráveis em `include/config.h`.
+### Alterar quantidade de LEDs
+Em `include/config.h`:
+```cpp
+#define LED_COUNT       60   // Número de LEDs na fita
+#define LED_PIN         13   // Pino de dados
+#define LED_BRIGHTNESS  200  // Brilho inicial (0-255)
+```
 
 ## Notas Importantes
 
-- **GPIO 34, 35**: Apenas entrada (input-only), sem pull-up interno. Use resistores de 10kΩ pull-up externos.
-- **GPIO 2**: Conectado ao LED onboard em alguns DevKits. Funciona normalmente como TFT_DC.
-- **Alimentação**: O ESP32 + TEA5767 + Display consomem ~300mA. Use fonte de pelo menos 500mA.
-- **Antena FM**: A qualidade da recepção depende muito da antena. Use a antena incluída com o TEA5767.
-- **DAC I2S**: Para o modo Bluetooth, é recomendado usar um DAC I2S externo (MAX98357A ou PCM5102) para melhor qualidade de áudio.
+- **Touch**: O display ILI9341 2.4" V1.3 já inclui o controlador touch XPT2046
+- **SPI compartilhado**: Display e touch usam o mesmo barramento SPI com CS separados
+- **GPIO 34**: Input-only (usado para IRQ do touch, opcional)
+- **Alimentação**: ESP32 + TEA5767 + Display consomem ~300mA. Use fonte de pelo menos 500mA
+- **Antena FM**: Posicione longe do display para melhor recepção
+- **DAC I2S**: Para modo BT, use MAX98357A (com amplificador) ou PCM5102 (saída de linha)
+- **WS2812B**: Alimentar com 5V (fonte externa para >10 LEDs). Usar resistor de 330Ω no pino de dados
+- **ADC**: GPIO 36 (VP) usado para captura de áudio. Usar divisor de tensão com 2x 10kΩ + 100nF
+- **Capacitor 1000µF**: Recomendado na alimentação dos LEDs WS2812B para evitar picos
 
 ## Licença
 

@@ -1,20 +1,19 @@
 /**
- * ESP32 Radio Bluetooth
- * 
- * Firmware principal que integra:
+ * ESP32 Radio Bluetooth - Pioneer Style
+ *
+ * Firmware principal - controle 100% por tela touch
  *  - Módulo FM TEA5767 (I2C)
- *  - Display TFT ILI9341 2.4" 240x320 (SPI)
+ *  - Display TFT ILI9341 2.4" 240x320 com Touch XPT2046 (SPI)
  *  - Bluetooth A2DP Sink para conexão com Alexa
- * 
- * Modos de operação:
- *  - FM: sintoniza estações FM com busca automática e presets
- *  - Bluetooth: recebe áudio da Alexa ou qualquer dispositivo BT
+ *  - LED WS2812B reativo ao som
+ *  - Visual estilo Pioneer automotivo
  */
 
 #include <Arduino.h>
 #include "config.h"
 #include "display_ui.h"
 #include "bt_audio.h"
+#include "led_effects.h"
 #include "TEA5767.h"
 
 // ============================================
@@ -23,6 +22,7 @@
 TEA5767     radio;
 DisplayUI   display;
 BTAudio     btAudio;
+LEDEffects  ledStrip;
 
 RadioMode   currentMode = MODE_FM;
 uint8_t     volume = VOLUME_DEFAULT;
@@ -32,47 +32,7 @@ bool        btStarted = false;
 // ============================================
 // Timing
 // ============================================
-unsigned long lastDisplayUpdate = 0;
 unsigned long lastStatusRead = 0;
-unsigned long lastButtonCheck = 0;
-
-// ============================================
-// Button state
-// ============================================
-struct Button {
-    uint8_t pin;
-    bool lastState;
-    unsigned long lastPress;
-};
-
-Button buttons[] = {
-    {BTN_MODE,        HIGH, 0},
-    {BTN_SEEK_UP,     HIGH, 0},
-    {BTN_SEEK_DOWN,   HIGH, 0},
-    {BTN_MUTE,        HIGH, 0},
-    {BTN_PRESET_NEXT, HIGH, 0},
-    {BTN_PRESET_PREV, HIGH, 0}
-};
-const int NUM_BUTTONS = sizeof(buttons) / sizeof(buttons[0]);
-
-// ============================================
-// Encoder state (optional)
-// ============================================
-volatile int encoderPos = 0;
-int lastEncoderPos = 0;
-
-void IRAM_ATTR encoderISR() {
-    static uint8_t lastState = 0;
-    uint8_t clk = digitalRead(ENCODER_CLK);
-    uint8_t dt = digitalRead(ENCODER_DT);
-    uint8_t state = (clk << 1) | dt;
-
-    if (lastState == 0b00) {
-        if (state == 0b01) encoderPos++;
-        if (state == 0b10) encoderPos--;
-    }
-    lastState = state;
-}
 
 // ============================================
 // Bluetooth Callbacks
@@ -94,19 +54,16 @@ void onBTPlayback(bool playing) {
 // ============================================
 void switchToFM() {
     currentMode = MODE_FM;
-    Serial.println("[MAIN] Switching to FM mode");
+    Serial.println("[MAIN] Modo FM");
 
-    // Stop Bluetooth if running
     if (btStarted) {
         btAudio.end();
         btStarted = false;
         delay(500);
     }
 
-    // Activate radio
     radio.setStandby(false);
 
-    // Redraw screen
     TEA5767_Status status = radio.getStatus();
     display.drawFMScreen(
         radio.getFrequency(),
@@ -115,18 +72,17 @@ void switchToFM() {
         muted,
         radio.getCurrentPresetIndex(),
         radio.getPresetCount(),
-        volume
+        volume,
+        ledStrip.getEffectName()
     );
 }
 
 void switchToBluetooth() {
     currentMode = MODE_BLUETOOTH;
-    Serial.println("[MAIN] Switching to Bluetooth mode");
+    Serial.println("[MAIN] Modo Bluetooth");
 
-    // Put radio in standby
     radio.setStandby(true);
 
-    // Start Bluetooth
     if (!btStarted) {
         btAudio.begin(BT_DEVICE_NAME);
         btAudio.setConnectionCallback(onBTConnection);
@@ -135,22 +91,14 @@ void switchToBluetooth() {
         btStarted = true;
     }
 
-    // Redraw screen
     display.drawBluetoothScreen(
         btAudio.isConnected(),
         btAudio.getConnectedDeviceName(),
         muted,
         volume,
-        btAudio.isPlaying()
+        btAudio.isPlaying(),
+        ledStrip.getEffectName()
     );
-}
-
-void toggleMode() {
-    if (currentMode == MODE_FM) {
-        switchToBluetooth();
-    } else {
-        switchToFM();
-    }
 }
 
 // ============================================
@@ -182,110 +130,103 @@ void toggleMute() {
 }
 
 // ============================================
-// Button Handling
+// Touch Handling
 // ============================================
-bool isButtonPressed(int index) {
-    bool currentState = digitalRead(buttons[index].pin);
-    if (currentState == LOW && buttons[index].lastState == HIGH) {
-        if (millis() - buttons[index].lastPress > DEBOUNCE_MS) {
-            buttons[index].lastPress = millis();
-            buttons[index].lastState = currentState;
-            return true;
-        }
-    }
-    buttons[index].lastState = currentState;
-    return false;
-}
+void handleTouch() {
+    TouchButton btn = display.checkTouch();
+    if (btn == BTN_NONE) return;
 
-void handleButtons() {
-    // Mode button
-    if (isButtonPressed(0)) {
-        toggleMode();
-    }
+    switch (btn) {
+    case BTN_MODE:
+        if (currentMode == MODE_FM) switchToBluetooth();
+        else switchToFM();
+        break;
 
-    if (currentMode == MODE_FM) {
-        // Seek Up
-        if (isButtonPressed(1)) {
+    case BTN_SEEK_UP:
+        if (currentMode == MODE_FM) {
             display.showSeekingAnimation();
             radio.seekUp();
-            TEA5767_Status status = radio.getStatus();
+            TEA5767_Status s = radio.getStatus();
             display.updateFrequency(radio.getFrequency());
-            display.updateSignalLevel(status.signalLevel);
-            display.updateStereoIndicator(status.stereo);
-            Serial.printf("[FM] Seek Up -> %.1f MHz\n", radio.getFrequency());
+            display.updateSignalLevel(s.signalLevel);
+            display.updateStereoIndicator(s.stereo);
+            Serial.printf("[FM] Seek >> %.1f MHz\n", radio.getFrequency());
         }
+        break;
 
-        // Seek Down
-        if (isButtonPressed(2)) {
+    case BTN_SEEK_DOWN:
+        if (currentMode == MODE_FM) {
             display.showSeekingAnimation();
             radio.seekDown();
-            TEA5767_Status status = radio.getStatus();
+            TEA5767_Status s = radio.getStatus();
             display.updateFrequency(radio.getFrequency());
-            display.updateSignalLevel(status.signalLevel);
-            display.updateStereoIndicator(status.stereo);
-            Serial.printf("[FM] Seek Down -> %.1f MHz\n", radio.getFrequency());
+            display.updateSignalLevel(s.signalLevel);
+            display.updateStereoIndicator(s.stereo);
+            Serial.printf("[FM] Seek << %.1f MHz\n", radio.getFrequency());
         }
+        break;
 
-        // Preset Next
-        if (isButtonPressed(4)) {
+    case BTN_PRESET_NEXT:
+        if (currentMode == MODE_FM) {
             radio.nextPreset();
-            TEA5767_Status status = radio.getStatus();
             display.updateFrequency(radio.getFrequency());
             display.updatePresetInfo(
                 radio.getCurrentPresetIndex(),
                 radio.getFrequency(),
                 radio.getPresetCount()
             );
-            Serial.printf("[FM] Preset -> %.1f MHz\n", radio.getFrequency());
+            Serial.printf("[FM] Preset >> %.1f MHz\n", radio.getFrequency());
         }
+        break;
 
-        // Preset Prev
-        if (isButtonPressed(5)) {
+    case BTN_PRESET_PREV:
+        if (currentMode == MODE_FM) {
             radio.prevPreset();
-            TEA5767_Status status = radio.getStatus();
             display.updateFrequency(radio.getFrequency());
             display.updatePresetInfo(
                 radio.getCurrentPresetIndex(),
                 radio.getFrequency(),
                 radio.getPresetCount()
             );
-            Serial.printf("[FM] Preset <- %.1f MHz\n", radio.getFrequency());
+            Serial.printf("[FM] Preset << %.1f MHz\n", radio.getFrequency());
         }
-    } else {
-        // Volume Up in BT mode
-        if (isButtonPressed(1)) {
-            adjustVolume(VOLUME_STEP);
-        }
+        break;
 
-        // Volume Down in BT mode
-        if (isButtonPressed(2)) {
-            adjustVolume(-VOLUME_STEP);
-        }
-    }
+    case BTN_VOL_UP:
+        adjustVolume(VOLUME_STEP);
+        break;
 
-    // Mute (both modes)
-    if (isButtonPressed(3)) {
+    case BTN_VOL_DOWN:
+        adjustVolume(-VOLUME_STEP);
+        break;
+
+    case BTN_MUTE:
         toggleMute();
-    }
-}
+        break;
 
-// ============================================
-// Encoder Handling (optional fine-tuning)
-// ============================================
-void handleEncoder() {
-    int pos = encoderPos;
-    int delta = pos - lastEncoderPos;
+    case BTN_PLAY_PAUSE:
+        if (currentMode == MODE_BLUETOOTH && btStarted) {
+            if (btAudio.isPlaying()) btAudio.pause();
+            else btAudio.play();
+        }
+        break;
 
-    if (delta == 0) return;
-    lastEncoderPos = pos;
+    case BTN_LED_MODE:
+        ledStrip.nextEffect();
+        display.showMessage(ledStrip.getEffectName(), COLOR_NEON_MAGENTA);
+        break;
 
-    if (currentMode == MODE_FM) {
-        float newFreq = radio.getFrequency() + (delta * FREQ_STEP);
-        radio.setFrequency(newFreq);
-        display.updateFrequency(radio.getFrequency());
-        Serial.printf("[FM] Tuning -> %.1f MHz\n", radio.getFrequency());
-    } else {
-        adjustVolume(delta * VOLUME_STEP);
+    case BTN_LED_BRIGHT:
+        ledStrip.cycleBrightness();
+        {
+            char msg[20];
+            snprintf(msg, sizeof(msg), "LED: %d%%", ledStrip.getBrightness() * 100 / 255);
+            display.showMessage(msg, COLOR_NEON_MAGENTA);
+        }
+        break;
+
+    default:
+        break;
     }
 }
 
@@ -305,22 +246,11 @@ void updateRadioStatus() {
 // ============================================
 void setup() {
     Serial.begin(115200);
-    Serial.println("\n=== ESP32 Radio Bluetooth ===");
-    Serial.println("Initializing...");
+    Serial.println("\n=== ESP32 Radio - Pioneer Style ===");
+    Serial.println("Touch + LED WS2812B reativo ao som");
 
-    // Initialize buttons with pull-up
-    for (int i = 0; i < NUM_BUTTONS; i++) {
-        pinMode(buttons[i].pin, INPUT_PULLUP);
-    }
-
-    // Encoder pins (optional)
-    pinMode(ENCODER_CLK, INPUT_PULLUP);
-    pinMode(ENCODER_DT, INPUT_PULLUP);
-    pinMode(ENCODER_SW, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(ENCODER_CLK), encoderISR, CHANGE);
-
-    // Initialize display
-    Serial.println("[INIT] Display TFT ILI9341...");
+    // Initialize display + touch
+    Serial.println("[INIT] Display TFT ILI9341 + Touch...");
     display.begin();
     display.drawSplashScreen();
 
@@ -330,16 +260,19 @@ void setup() {
     if (radioOk) {
         Serial.println("[INIT] TEA5767 OK");
     } else {
-        Serial.println("[INIT] TEA5767 FALHA - verifique conexao I2C");
-        display.showMessage("TEA5767 nao encontrado!", COLOR_MUTED);
+        Serial.println("[INIT] TEA5767 FALHA - verifique I2C");
+        display.showMessage("TEA5767 nao encontrado!", COLOR_NEON_RED);
         delay(2000);
     }
+
+    // Initialize LED strip
+    Serial.println("[INIT] LED WS2812B...");
+    ledStrip.begin();
 
     // Start in FM mode
     switchToFM();
 
     Serial.println("[INIT] Sistema pronto!");
-    Serial.println("[INIT] Pressione MODE para alternar FM/BT");
 }
 
 // ============================================
@@ -348,11 +281,14 @@ void setup() {
 void loop() {
     unsigned long now = millis();
 
-    // Handle buttons
-    handleButtons();
+    // Handle touch input
+    handleTouch();
 
-    // Handle encoder
-    handleEncoder();
+    // Update EQ visualizer on display
+    display.updateEQ();
+
+    // Update LED strip (reads audio + applies effect)
+    ledStrip.update();
 
     // Update radio status periodically
     if (now - lastStatusRead >= STATUS_READ_MS) {
@@ -360,6 +296,5 @@ void loop() {
         updateRadioStatus();
     }
 
-    // Small delay to prevent watchdog
-    delay(10);
+    delay(5);
 }
