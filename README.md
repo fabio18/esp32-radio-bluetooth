@@ -226,6 +226,7 @@ pio device monitor
    - **TFT_eSPI** by Bodmer
    - **FastLED** by Daniel Garcia
    - **ESP32-A2DP** by Phil Schatzmann
+   - **arduino-audio-tools** by Phil Schatzmann
 
 4. **IMPORTANTE** — Configure o TFT_eSPI:
    - Copie o arquivo `arduino/esp32_radio_bluetooth/User_Setup.h`
@@ -363,6 +364,7 @@ esp32-radio-bluetooth/
 | [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) | ^2.5.34 | Display ILI9341 + Touch XPT2046 |
 | [ESP32-A2DP](https://github.com/pschatzmann/ESP32-A2DP) | v1.8.0 | Bluetooth A2DP Sink |
 | [FastLED](https://github.com/FastLED/FastLED) | ^3.6.0 | WS2812B LED strip |
+| [arduino-audio-tools](https://github.com/pschatzmann/arduino-audio-tools) | latest | I2S output (ESP32 3.x) |
 
 ## Customização
 

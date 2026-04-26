@@ -18,6 +18,7 @@
  *     - TFT_eSPI by Bodmer
  *     - FastLED by Daniel Garcia
  *     - ESP32-A2DP by Phil Schatzmann
+ *     - arduino-audio-tools by Phil Schatzmann
  *  3. IMPORTANTE: Copie o arquivo User_Setup.h para a pasta
  *     da biblioteca TFT_eSPI (substituindo o existente):
  *     Arduino/libraries/TFT_eSPI/User_Setup.h
@@ -33,6 +34,7 @@
 #include <SPI.h>
 #include <TFT_eSPI.h>
 #include <FastLED.h>
+#include "AudioTools.h"
 #include "BluetoothA2DPSink.h"
 
 // ============================================
@@ -266,6 +268,8 @@ public:
 // ============================================
 // BLUETOOTH A2DP AUDIO
 // ============================================
+I2SStream i2sStream;
+
 class BTAudio {
 public:
   BluetoothA2DPSink a2dp;
@@ -278,18 +282,18 @@ public:
   PlayCb playCb;
   static BTAudio* inst;
 
-  BTAudio() : connected(false), playing(false), vol(VOLUME_DEFAULT),
+  BTAudio() : a2dp(i2sStream), connected(false), playing(false), vol(VOLUME_DEFAULT),
     connCb(nullptr), playCb(nullptr) {
     memset(deviceName, 0, 64);
     inst = this;
   }
 
   void begin(const char* name) {
-    i2s_pin_config_t pins = {
-      .bck_io_num = I2S_BCLK, .ws_io_num = I2S_LRC,
-      .data_out_num = I2S_DOUT, .data_in_num = I2S_PIN_NO_CHANGE
-    };
-    a2dp.set_pin_config(pins);
+    auto cfg = i2sStream.defaultConfig();
+    cfg.pin_bck = I2S_BCLK;
+    cfg.pin_ws = I2S_LRC;
+    cfg.pin_data = I2S_DOUT;
+    i2sStream.begin(cfg);
     a2dp.set_on_connection_state_changed(onConn);
     a2dp.set_on_audio_state_changed(onAudio);
     a2dp.set_volume(vol * 127 / 100);
@@ -752,7 +756,7 @@ LEDEffects  ledStrip;
 RadioMode   currentMode = MODE_FM;
 uint8_t     volume = VOLUME_DEFAULT;
 bool        isMuted = false;
-bool        btStarted = false;
+bool        btActive = false;
 unsigned long lastStatusRead = 0;
 
 // ============================================
@@ -766,7 +770,7 @@ void onBTPlay(bool p) { if (currentMode == MODE_BLUETOOTH) display.updatePlay(p)
 // ============================================
 void switchToFM() {
   currentMode = MODE_FM;
-  if (btStarted) { btAudio.end(); btStarted = false; delay(500); }
+  if (btActive) { btAudio.end(); btActive = false; delay(500); }
   radio.setStandby(false);
   TEA5767_Status st = radio.getStatus();
   display.drawFMScreen(radio.frequency, st.stereo, st.signalLevel, isMuted,
@@ -776,12 +780,12 @@ void switchToFM() {
 void switchToBT() {
   currentMode = MODE_BLUETOOTH;
   radio.setStandby(true);
-  if (!btStarted) {
+  if (!btActive) {
     btAudio.begin(BT_DEVICE_NAME);
     btAudio.connCb = onBTConn;
     btAudio.playCb = onBTPlay;
     btAudio.setVolume(volume);
-    btStarted = true;
+    btActive = true;
   }
   display.drawBTScreen(btAudio.connected, btAudio.deviceName, isMuted,
     volume, btAudio.playing, ledStrip.getEffectName());
@@ -790,7 +794,7 @@ void switchToBT() {
 void adjustVol(int d) {
   int v = (int)volume + d;
   volume = (uint8_t)constrain(v, 0, VOLUME_MAX);
-  if (currentMode == MODE_BLUETOOTH && btStarted) btAudio.setVolume(volume);
+  if (currentMode == MODE_BLUETOOTH && btActive) btAudio.setVolume(volume);
   display.updateVolume(volume);
 }
 
@@ -833,7 +837,7 @@ void handleTouch() {
     case BTN_VOL_DOWN: adjustVol(-VOLUME_STEP); break;
     case BTN_MUTE: toggleMute(); break;
     case BTN_PLAY_PAUSE:
-      if (currentMode == MODE_BLUETOOTH && btStarted) {
+      if (currentMode == MODE_BLUETOOTH && btActive) {
         if (btAudio.playing) btAudio.pause(); else btAudio.play();
       } break;
     case BTN_LED_MODE:
