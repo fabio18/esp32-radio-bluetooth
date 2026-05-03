@@ -2,17 +2,17 @@
   (version 20231120)
   (generator "devin_ai")
   (generator_version "1.0")
-  (uuid "af0e02aa-a343-48bf-a8da-5767b83c81b2")
+  (uuid "b41aa868-7f65-4472-9856-b92578111106")
   (paper "A4")
 
   (title_block
     (title "ESP32 + SN74HCT125 Level Shifter para WS2812B")
     (date "2026-05-03")
-    (rev "2.0")
+    (rev "3.0")
     (company "ESP32 Radio Bluetooth")
     (comment 1 "Level Shifter 3.3V -> 5V para LED WS2812B")
-    (comment 2 "SN74HCT125 - Quad Buffer com entradas TTL compativeis")
-    (comment 3 "GPIO13 do ESP32 -> 1A -> 1Y -> 100R -> WS2812B DIN")
+    (comment 2 "SN74HCT125 - Quad Buffer - formato oficial KiCad multi-unit")
+    (comment 3 "GPIO13 -> Gate1 A (pin2) -> Gate1 Y (pin3) -> 100R -> WS2812B DIN")
     (comment 4 "Projeto KiCad 10")
   )
 
@@ -42,96 +42,138 @@
         (at 0 0 0)
         (effects (font (size 1.27 1.27)) (hide yes))
       )
+      (property "ki_locked" ""
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)))
+      )
+      (property "ki_keywords" "HCTMOS buffer 3State"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) (hide yes))
+      )
+      (property "ki_fp_filters" "DIP*W7.62mm* SO14* TSSOP?14*"
+        (at 0 0 0)
+        (effects (font (size 1.27 1.27)) (hide yes))
+      )
       (symbol "74HCT125_1_0"
-        (rectangle
-          (start -7.62 10.16)
-          (end 7.62 -10.16)
+        (polyline
+          (pts (xy -3.81 3.81) (xy -3.81 -3.81) (xy 3.81 0) (xy -3.81 3.81))
           (stroke (width 0.254) (type default))
           (fill (type background))
         )
         (pin input inverted
-          (at -10.16 7.62 0)
-          (length 2.54)
-          (name "~{1OE}" (effects (font (size 1.27 1.27))))
+          (at 0 -6.35 90)
+          (length 4.445)
+          (name "" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
         (pin input line
-          (at -10.16 5.08 0)
-          (length 2.54)
-          (name "1A" (effects (font (size 1.27 1.27))))
+          (at -7.62 0 0)
+          (length 3.81)
+          (name "" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
         )
         (pin tri_state line
-          (at 10.16 5.08 180)
-          (length 2.54)
-          (name "1Y" (effects (font (size 1.27 1.27))))
+          (at 7.62 0 180)
+          (length 3.81)
+          (name "" (effects (font (size 1.27 1.27))))
           (number "3" (effects (font (size 1.27 1.27))))
         )
+      )
+      (symbol "74HCT125_2_0"
+        (polyline
+          (pts (xy -3.81 3.81) (xy -3.81 -3.81) (xy 3.81 0) (xy -3.81 3.81))
+          (stroke (width 0.254) (type default))
+          (fill (type background))
+        )
         (pin input inverted
-          (at -10.16 2.54 0)
-          (length 2.54)
-          (name "~{2OE}" (effects (font (size 1.27 1.27))))
+          (at 0 -6.35 90)
+          (length 4.445)
+          (name "" (effects (font (size 1.27 1.27))))
           (number "4" (effects (font (size 1.27 1.27))))
         )
         (pin input line
-          (at -10.16 0 0)
-          (length 2.54)
-          (name "2A" (effects (font (size 1.27 1.27))))
+          (at -7.62 0 0)
+          (length 3.81)
+          (name "" (effects (font (size 1.27 1.27))))
           (number "5" (effects (font (size 1.27 1.27))))
         )
         (pin tri_state line
-          (at 10.16 0 180)
-          (length 2.54)
-          (name "2Y" (effects (font (size 1.27 1.27))))
+          (at 7.62 0 180)
+          (length 3.81)
+          (name "" (effects (font (size 1.27 1.27))))
           (number "6" (effects (font (size 1.27 1.27))))
         )
-        (pin power_in line
-          (at 0 -12.7 90)
-          (length 2.54)
-          (name "GND" (effects (font (size 1.27 1.27))))
-          (number "7" (effects (font (size 1.27 1.27))))
+      )
+      (symbol "74HCT125_3_0"
+        (polyline
+          (pts (xy -3.81 3.81) (xy -3.81 -3.81) (xy 3.81 0) (xy -3.81 3.81))
+          (stroke (width 0.254) (type default))
+          (fill (type background))
         )
         (pin tri_state line
-          (at 10.16 -5.08 180)
-          (length 2.54)
-          (name "3Y" (effects (font (size 1.27 1.27))))
+          (at 7.62 0 180)
+          (length 3.81)
+          (name "" (effects (font (size 1.27 1.27))))
           (number "8" (effects (font (size 1.27 1.27))))
         )
         (pin input line
-          (at -10.16 -5.08 0)
-          (length 2.54)
-          (name "3A" (effects (font (size 1.27 1.27))))
+          (at -7.62 0 0)
+          (length 3.81)
+          (name "" (effects (font (size 1.27 1.27))))
           (number "9" (effects (font (size 1.27 1.27))))
         )
         (pin input inverted
-          (at -10.16 -2.54 0)
-          (length 2.54)
-          (name "~{3OE}" (effects (font (size 1.27 1.27))))
+          (at 0 -6.35 90)
+          (length 4.445)
+          (name "" (effects (font (size 1.27 1.27))))
           (number "10" (effects (font (size 1.27 1.27))))
         )
+      )
+      (symbol "74HCT125_4_0"
+        (polyline
+          (pts (xy -3.81 3.81) (xy -3.81 -3.81) (xy 3.81 0) (xy -3.81 3.81))
+          (stroke (width 0.254) (type default))
+          (fill (type background))
+        )
         (pin tri_state line
-          (at 10.16 -2.54 180)
-          (length 2.54)
-          (name "4Y" (effects (font (size 1.27 1.27))))
+          (at 7.62 0 180)
+          (length 3.81)
+          (name "" (effects (font (size 1.27 1.27))))
           (number "11" (effects (font (size 1.27 1.27))))
         )
         (pin input line
-          (at -10.16 -7.62 0)
-          (length 2.54)
-          (name "4A" (effects (font (size 1.27 1.27))))
+          (at -7.62 0 0)
+          (length 3.81)
+          (name "" (effects (font (size 1.27 1.27))))
           (number "12" (effects (font (size 1.27 1.27))))
         )
         (pin input inverted
-          (at 10.16 -7.62 180)
-          (length 2.54)
-          (name "~{4OE}" (effects (font (size 1.27 1.27))))
+          (at 0 -6.35 90)
+          (length 4.445)
+          (name "" (effects (font (size 1.27 1.27))))
           (number "13" (effects (font (size 1.27 1.27))))
+        )
+      )
+      (symbol "74HCT125_5_0"
+        (pin power_in line
+          (at 0 -12.7 90)
+          (length 5.08)
+          (name "GND" (effects (font (size 1.27 1.27))))
+          (number "7" (effects (font (size 1.27 1.27))))
         )
         (pin power_in line
           (at 0 12.7 270)
-          (length 2.54)
+          (length 5.08)
           (name "VCC" (effects (font (size 1.27 1.27))))
           (number "14" (effects (font (size 1.27 1.27))))
+        )
+      )
+      (symbol "74HCT125_5_1"
+        (rectangle
+          (start -5.08 7.62)
+          (end 5.08 -7.62)
+          (stroke (width 0.254) (type default))
+          (fill (type background))
         )
       )
     )
@@ -159,22 +201,16 @@
       )
       (symbol "R_0_1"
         (rectangle
-          (start -1.016 -2.54)
-          (end 1.016 2.54)
-          (stroke (width 0.254) (type default))
-          (fill (type none))
+          (start -1.016 -2.54) (end 1.016 2.54)
+          (stroke (width 0.254) (type default)) (fill (type none))
         )
       )
       (symbol "R_1_1"
-        (pin passive line
-          (at 0 3.81 270)
-          (length 1.27)
+        (pin passive line (at 0 3.81 270) (length 1.27)
           (name "~" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
-        (pin passive line
-          (at 0 -3.81 90)
-          (length 1.27)
+        (pin passive line (at 0 -3.81 90) (length 1.27)
           (name "~" (effects (font (size 1.27 1.27))))
           (number "2" (effects (font (size 1.27 1.27))))
         )
@@ -203,28 +239,18 @@
         (effects (font (size 1.27 1.27)) (hide yes))
       )
       (symbol "C_0_1"
-        (polyline
-          (pts (xy -2.032 -0.762) (xy 2.032 -0.762))
-          (stroke (width 0.508) (type default))
-          (fill (type none))
-        )
-        (polyline
-          (pts (xy -2.032 0.762) (xy 2.032 0.762))
-          (stroke (width 0.508) (type default))
-          (fill (type none))
-        )
+        (polyline (pts (xy -2.032 -0.762) (xy 2.032 -0.762))
+          (stroke (width 0.508) (type default)) (fill (type none)))
+        (polyline (pts (xy -2.032 0.762) (xy 2.032 0.762))
+          (stroke (width 0.508) (type default)) (fill (type none)))
       )
       (symbol "C_1_1"
-        (pin passive line
-          (at 0 3.81 270) (length 2.794)
+        (pin passive line (at 0 3.81 270) (length 2.794)
           (name "~" (effects (font (size 1.27 1.27))))
-          (number "1" (effects (font (size 1.27 1.27))))
-        )
-        (pin passive line
-          (at 0 -3.81 90) (length 2.794)
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin passive line (at 0 -3.81 90) (length 2.794)
           (name "~" (effects (font (size 1.27 1.27))))
-          (number "2" (effects (font (size 1.27 1.27))))
-        )
+          (number "2" (effects (font (size 1.27 1.27)))))
       )
     )
     (symbol "Device:CP"
@@ -250,38 +276,22 @@
         (effects (font (size 1.27 1.27)) (hide yes))
       )
       (symbol "CP_0_1"
-        (polyline
-          (pts (xy -2.032 0.762) (xy 2.032 0.762))
-          (stroke (width 0.508) (type default))
-          (fill (type none))
-        )
-        (polyline
-          (pts (xy -2.032 -0.762) (xy 2.032 -0.762))
-          (stroke (width 0.508) (type default))
-          (fill (type none))
-        )
-        (polyline
-          (pts (xy -1.524 1.524) (xy -0.508 1.524))
-          (stroke (width 0.254) (type default))
-          (fill (type none))
-        )
-        (polyline
-          (pts (xy -1.016 2.032) (xy -1.016 1.016))
-          (stroke (width 0.254) (type default))
-          (fill (type none))
-        )
+        (polyline (pts (xy -2.032 0.762) (xy 2.032 0.762))
+          (stroke (width 0.508) (type default)) (fill (type none)))
+        (polyline (pts (xy -2.032 -0.762) (xy 2.032 -0.762))
+          (stroke (width 0.508) (type default)) (fill (type none)))
+        (polyline (pts (xy -1.524 1.524) (xy -0.508 1.524))
+          (stroke (width 0.254) (type default)) (fill (type none)))
+        (polyline (pts (xy -1.016 2.032) (xy -1.016 1.016))
+          (stroke (width 0.254) (type default)) (fill (type none)))
       )
       (symbol "CP_1_1"
-        (pin passive line
-          (at 0 3.81 270) (length 2.794)
+        (pin passive line (at 0 3.81 270) (length 2.794)
           (name "~" (effects (font (size 1.27 1.27))))
-          (number "1" (effects (font (size 1.27 1.27))))
-        )
-        (pin passive line
-          (at 0 -3.81 90) (length 2.794)
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin passive line (at 0 -3.81 90) (length 2.794)
           (name "~" (effects (font (size 1.27 1.27))))
-          (number "2" (effects (font (size 1.27 1.27))))
-        )
+          (number "2" (effects (font (size 1.27 1.27)))))
       )
     )
     (symbol "Connector_Generic:Conn_01x04"
@@ -307,35 +317,21 @@
       )
       (symbol "Conn_01x04_1_1"
         (rectangle
-          (start -1.27 5.08)
-          (end 0 -5.08)
-          (stroke (width 0.1524) (type default))
-          (fill (type none))
+          (start -1.27 5.08) (end 0 -5.08)
+          (stroke (width 0.1524) (type default)) (fill (type none))
         )
-        (pin passive line
-          (at -3.81 3.81 0)
-          (length 2.54)
+        (pin passive line (at -3.81 3.81 0) (length 2.54)
           (name "Pin_1" (effects (font (size 1.27 1.27))))
-          (number "1" (effects (font (size 1.27 1.27))))
-        )
-        (pin passive line
-          (at -3.81 1.27 0)
-          (length 2.54)
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin passive line (at -3.81 1.27 0) (length 2.54)
           (name "Pin_2" (effects (font (size 1.27 1.27))))
-          (number "2" (effects (font (size 1.27 1.27))))
-        )
-        (pin passive line
-          (at -3.81 -1.27 0)
-          (length 2.54)
+          (number "2" (effects (font (size 1.27 1.27)))))
+        (pin passive line (at -3.81 -1.27 0) (length 2.54)
           (name "Pin_3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin passive line
-          (at -3.81 -3.81 0)
-          (length 2.54)
+          (number "3" (effects (font (size 1.27 1.27)))))
+        (pin passive line (at -3.81 -3.81 0) (length 2.54)
           (name "Pin_4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
+          (number "4" (effects (font (size 1.27 1.27)))))
       )
     )
     (symbol "Connector_Generic:Conn_01x03"
@@ -361,29 +357,18 @@
       )
       (symbol "Conn_01x03_1_1"
         (rectangle
-          (start -1.27 3.81)
-          (end 0 -3.81)
-          (stroke (width 0.1524) (type default))
-          (fill (type none))
+          (start -1.27 3.81) (end 0 -3.81)
+          (stroke (width 0.1524) (type default)) (fill (type none))
         )
-        (pin passive line
-          (at -3.81 2.54 0)
-          (length 2.54)
+        (pin passive line (at -3.81 2.54 0) (length 2.54)
           (name "Pin_1" (effects (font (size 1.27 1.27))))
-          (number "1" (effects (font (size 1.27 1.27))))
-        )
-        (pin passive line
-          (at -3.81 0.0 0)
-          (length 2.54)
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin passive line (at -3.81 0.0 0) (length 2.54)
           (name "Pin_2" (effects (font (size 1.27 1.27))))
-          (number "2" (effects (font (size 1.27 1.27))))
-        )
-        (pin passive line
-          (at -3.81 -2.54 0)
-          (length 2.54)
+          (number "2" (effects (font (size 1.27 1.27)))))
+        (pin passive line (at -3.81 -2.54 0) (length 2.54)
           (name "Pin_3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
+          (number "3" (effects (font (size 1.27 1.27)))))
       )
     )
     (symbol "Connector_Generic:Conn_01x02"
@@ -409,23 +394,15 @@
       )
       (symbol "Conn_01x02_1_1"
         (rectangle
-          (start -1.27 2.54)
-          (end 0 -2.54)
-          (stroke (width 0.1524) (type default))
-          (fill (type none))
+          (start -1.27 2.54) (end 0 -2.54)
+          (stroke (width 0.1524) (type default)) (fill (type none))
         )
-        (pin passive line
-          (at -3.81 1.27 0)
-          (length 2.54)
+        (pin passive line (at -3.81 1.27 0) (length 2.54)
           (name "Pin_1" (effects (font (size 1.27 1.27))))
-          (number "1" (effects (font (size 1.27 1.27))))
-        )
-        (pin passive line
-          (at -3.81 -1.27 0)
-          (length 2.54)
+          (number "1" (effects (font (size 1.27 1.27)))))
+        (pin passive line (at -3.81 -1.27 0) (length 2.54)
           (name "Pin_2" (effects (font (size 1.27 1.27))))
-          (number "2" (effects (font (size 1.27 1.27))))
-        )
+          (number "2" (effects (font (size 1.27 1.27)))))
       )
     )
     (symbol "power:+5V"
@@ -444,34 +421,23 @@
         (effects (font (size 1.27 1.27)))
       )
       (property "Footprint" ""
-        (at 0 0 0)
-        (effects (font (size 1.27 1.27)) (hide yes))
+        (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
       )
       (property "Datasheet" ""
-        (at 0 0 0)
-        (effects (font (size 1.27 1.27)) (hide yes))
+        (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
       )
       (symbol "+5V_0_1"
-        (polyline
-          (pts (xy -0.762 1.27) (xy 0 2.54))
-          (stroke (width 0) (type default)) (fill (type none))
-        )
-        (polyline
-          (pts (xy 0 0) (xy 0 2.54))
-          (stroke (width 0) (type default)) (fill (type none))
-        )
-        (polyline
-          (pts (xy 0 2.54) (xy 0.762 1.27))
-          (stroke (width 0) (type default)) (fill (type none))
-        )
+        (polyline (pts (xy -0.762 1.27) (xy 0 2.54))
+          (stroke (width 0) (type default)) (fill (type none)))
+        (polyline (pts (xy 0 0) (xy 0 2.54))
+          (stroke (width 0) (type default)) (fill (type none)))
+        (polyline (pts (xy 0 2.54) (xy 0.762 1.27))
+          (stroke (width 0) (type default)) (fill (type none)))
       )
       (symbol "+5V_1_1"
-        (pin power_in line
-          (at 0 0 90)
-          (length 0)
+        (pin power_in line (at 0 0 90) (length 0)
           (name "+5V" (effects (font (size 1.27 1.27))))
-          (number "1" (effects (font (size 1.27 1.27))))
-        )
+          (number "1" (effects (font (size 1.27 1.27)))))
       )
     )
     (symbol "power:GND"
@@ -490,26 +456,19 @@
         (effects (font (size 1.27 1.27)))
       )
       (property "Footprint" ""
-        (at 0 0 0)
-        (effects (font (size 1.27 1.27)) (hide yes))
+        (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
       )
       (property "Datasheet" ""
-        (at 0 0 0)
-        (effects (font (size 1.27 1.27)) (hide yes))
+        (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
       )
       (symbol "GND_0_1"
-        (polyline
-          (pts (xy 0 0) (xy 0 -1.27) (xy 1.27 -1.27) (xy 0 -2.54) (xy -1.27 -1.27) (xy 0 -1.27))
-          (stroke (width 0) (type default)) (fill (type none))
-        )
+        (polyline (pts (xy 0 0) (xy 0 -1.27) (xy 1.27 -1.27) (xy 0 -2.54) (xy -1.27 -1.27) (xy 0 -1.27))
+          (stroke (width 0) (type default)) (fill (type none)))
       )
       (symbol "GND_1_1"
-        (pin power_in line
-          (at 0 0 270)
-          (length 0)
+        (pin power_in line (at 0 0 270) (length 0)
           (name "GND" (effects (font (size 1.27 1.27))))
-          (number "1" (effects (font (size 1.27 1.27))))
-        )
+          (number "1" (effects (font (size 1.27 1.27)))))
       )
     )
     (symbol "power:+3V3"
@@ -528,48 +487,36 @@
         (effects (font (size 1.27 1.27)))
       )
       (property "Footprint" ""
-        (at 0 0 0)
-        (effects (font (size 1.27 1.27)) (hide yes))
+        (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
       )
       (property "Datasheet" ""
-        (at 0 0 0)
-        (effects (font (size 1.27 1.27)) (hide yes))
+        (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
       )
       (symbol "+3V3_0_1"
-        (polyline
-          (pts (xy -0.762 1.27) (xy 0 2.54))
-          (stroke (width 0) (type default)) (fill (type none))
-        )
-        (polyline
-          (pts (xy 0 0) (xy 0 2.54))
-          (stroke (width 0) (type default)) (fill (type none))
-        )
-        (polyline
-          (pts (xy 0 2.54) (xy 0.762 1.27))
-          (stroke (width 0) (type default)) (fill (type none))
-        )
+        (polyline (pts (xy -0.762 1.27) (xy 0 2.54))
+          (stroke (width 0) (type default)) (fill (type none)))
+        (polyline (pts (xy 0 0) (xy 0 2.54))
+          (stroke (width 0) (type default)) (fill (type none)))
+        (polyline (pts (xy 0 2.54) (xy 0.762 1.27))
+          (stroke (width 0) (type default)) (fill (type none)))
       )
       (symbol "+3V3_1_1"
-        (pin power_in line
-          (at 0 0 90)
-          (length 0)
+        (pin power_in line (at 0 0 90) (length 0)
           (name "+3V3" (effects (font (size 1.27 1.27))))
-          (number "1" (effects (font (size 1.27 1.27))))
-        )
+          (number "1" (effects (font (size 1.27 1.27)))))
       )
     )
   )
 
   (symbol
     (lib_id "74xx:74HCT125")
-    (at 139.7 88.9 0)
-    
+    (at 127 78.74 0)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "6583aab6-3f92-4018-a71e-c29a9146478e")
+    (uuid "8edbed15-09d4-4d26-8303-99c08e06991b")
     (property "Reference" "U1"
       (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
@@ -579,31 +526,142 @@
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (instances
       (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "U1")
-          (unit 1)
-        )
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "U1") (unit 1))
       )
     )
-  )  (symbol
+  )
+  (symbol
+    (lib_id "74xx:74HCT125")
+    (at 127 96.52 0)
+    (unit 2)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "f0756650-ca2b-445e-8f48-97b23ac7ec75")
+    (property "Reference" "U1"
+      (at 0 -2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "SN74HCT125"
+      (at 0 2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (property "Datasheet" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (instances
+      (project "esp32_ws2812b_levelshifter"
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "U1") (unit 2))
+      )
+    )
+  )
+  (symbol
+    (lib_id "74xx:74HCT125")
+    (at 127 114.3 0)
+    (unit 3)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "e74904d5-7fdb-43af-8929-9bb3746902c4")
+    (property "Reference" "U1"
+      (at 0 -2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "SN74HCT125"
+      (at 0 2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (property "Datasheet" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (instances
+      (project "esp32_ws2812b_levelshifter"
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "U1") (unit 3))
+      )
+    )
+  )
+  (symbol
+    (lib_id "74xx:74HCT125")
+    (at 127 132.08 0)
+    (unit 4)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "345fa521-bd4c-47f7-81aa-2f3ad4e04d69")
+    (property "Reference" "U1"
+      (at 0 -2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "SN74HCT125"
+      (at 0 2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (property "Datasheet" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (instances
+      (project "esp32_ws2812b_levelshifter"
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "U1") (unit 4))
+      )
+    )
+  )
+  (symbol
+    (lib_id "74xx:74HCT125")
+    (at 172.72 114.3 0)
+    (unit 5)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "7d804b95-f2ef-49dc-b20e-c2fbcf0f84a8")
+    (property "Reference" "U1"
+      (at 0 -2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "SN74HCT125"
+      (at 0 2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (property "Datasheet" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (instances
+      (project "esp32_ws2812b_levelshifter"
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "U1") (unit 5))
+      )
+    )
+  )
+  (symbol
     (lib_id "Device:R")
-    (at 162.56 83.82000000000001 90)
-    
+    (at 152.4 78.74 90)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "01d36732-a35c-4a73-9c62-9a2301acc89a")
+    (uuid "888ca460-da2b-4678-b84c-8b7fe844a174")
     (property "Reference" "R1"
       (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
@@ -613,31 +671,26 @@
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (instances
       (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "R1")
-          (unit 1)
-        )
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "R1") (unit 1))
       )
     )
-  )  (symbol
+  )
+  (symbol
     (lib_id "Device:C")
-    (at 152.4 68.58 0)
-    
+    (at 185.42 106.68 0)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "0480b22c-043f-45fd-a16a-979a8f905fc4")
+    (uuid "feafd5c0-0d45-4424-8a8d-9bf7459a4f1d")
     (property "Reference" "C1"
       (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
@@ -647,31 +700,26 @@
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (instances
       (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "C1")
-          (unit 1)
-        )
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "C1") (unit 1))
       )
     )
-  )  (symbol
+  )
+  (symbol
     (lib_id "Device:CP")
-    (at 200.66 88.9 0)
-    
+    (at 215.9 78.74 0)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "fc354436-646a-43f8-9d1a-87acf9aa1eac")
+    (uuid "45adf7b9-2670-4b86-bcf7-ccdc3ea3b918")
     (property "Reference" "C2"
       (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
@@ -681,65 +729,26 @@
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (instances
       (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "C2")
-          (unit 1)
-        )
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "C2") (unit 1))
       )
     )
-  )  (symbol
-    (lib_id "Device:C")
-    (at 104.14 68.58 0)
-    
-    (unit 1)
-    (exclude_from_sim no)
-    (in_bom yes)
-    (on_board yes)
-    (dnp no)
-    (uuid "6cb82fc7-9d8e-497f-b4c7-3dab6ed78a29")
-    (property "Reference" "C3"
-      (at 0 -2.54 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Value" "100nF"
-      (at 0 2.54 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
-    )
-    (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
-    )
-    (instances
-      (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "C3")
-          (unit 1)
-        )
-      )
-    )
-  )  (symbol
+  )
+  (symbol
     (lib_id "Connector_Generic:Conn_01x04")
-    (at 83.82 86.36 0)
-    
+    (at 78.74 81.28 0)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "df7bb930-274e-4fde-b56a-22aad1f959c7")
+    (uuid "4c65568a-e6bc-425a-bf5c-c7212a015941")
     (property "Reference" "J1"
       (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
@@ -749,31 +758,26 @@
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (instances
       (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "J1")
-          (unit 1)
-        )
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "J1") (unit 1))
       )
     )
-  )  (symbol
+  )
+  (symbol
     (lib_id "Connector_Generic:Conn_01x03")
-    (at 218.44 86.36 0)
-    
+    (at 236.22 78.74 0)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "9554a722-5acd-4bca-90ca-78907be6a39c")
+    (uuid "fb6f4e98-dc4d-4d66-bf67-93d9f43ef0fc")
     (property "Reference" "J2"
       (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
@@ -783,65 +787,55 @@
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (instances
       (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "J2")
-          (unit 1)
-        )
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "J2") (unit 1))
       )
     )
-  )  (symbol
+  )
+  (symbol
     (lib_id "Connector_Generic:Conn_01x02")
-    (at 83.82 109.22 0)
-    
+    (at 78.74 139.7 0)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "f0904a8b-a956-4dad-b2d2-69beebac5563")
+    (uuid "c809604a-b845-4d5f-8961-32464ba8893f")
     (property "Reference" "J3"
       (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "PWR_5V"
+    (property "Value" "PWR_IN"
       (at 0 2.54 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (instances
       (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "J3")
-          (unit 1)
-        )
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "J3") (unit 1))
       )
     )
-  )  (symbol
+  )
+  (symbol
     (lib_id "power:+5V")
-    (at 139.7 71.12 0)
-    
+    (at 172.72 96.52 0)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "07f3398e-a46a-4047-822e-fb9ba10989aa")
+    (uuid "6b0e9f25-fadd-400d-9169-3c684a5c410d")
     (property "Reference" "#PWR01"
       (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
@@ -851,31 +845,26 @@
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (instances
       (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "#PWR01")
-          (unit 1)
-        )
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "#PWR01") (unit 1))
       )
     )
-  )  (symbol
+  )
+  (symbol
     (lib_id "power:+5V")
-    (at 152.4 60.96 0)
-    
+    (at 185.42 99.06 0)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "ab3a8345-6f22-4751-aff8-0accadf1ae5b")
+    (uuid "e3ae57db-a1d5-443e-b02a-9451069c31e2")
     (property "Reference" "#PWR02"
       (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
@@ -885,31 +874,26 @@
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (instances
       (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "#PWR02")
-          (unit 1)
-        )
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "#PWR02") (unit 1))
       )
     )
-  )  (symbol
+  )
+  (symbol
     (lib_id "power:+5V")
-    (at 200.66 81.28 0)
-    
+    (at 215.9 71.11999999999999 0)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "986e21d1-62e9-48bd-a79c-0aef443a9c53")
+    (uuid "b1067281-f4b2-4ee3-b541-5febccb83ab2")
     (property "Reference" "#PWR03"
       (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
@@ -919,65 +903,55 @@
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (instances
       (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "#PWR03")
-          (unit 1)
-        )
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "#PWR03") (unit 1))
       )
     )
-  )  (symbol
-    (lib_id "power:+5V")
-    (at 209.54999999999998 81.28 0)
-    
+  )
+  (symbol
+    (lib_id "power:GND")
+    (at 172.72 132.08 0)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "948417fd-7118-4a96-ac26-33c7d6912fd0")
+    (uuid "f310bd5b-a5d1-4623-bb7a-e1aee311b9a6")
     (property "Reference" "#PWR04"
       (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "+5V"
+    (property "Value" "GND"
       (at 0 2.54 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (instances
       (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "#PWR04")
-          (unit 1)
-        )
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "#PWR04") (unit 1))
       )
     )
-  )  (symbol
+  )
+  (symbol
     (lib_id "power:GND")
-    (at 139.7 106.68 0)
-    
+    (at 185.42 114.30000000000001 0)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "d1ab35c5-e651-4667-af39-fefb030f766e")
+    (uuid "45eaf18e-ddcb-445b-ad73-9a30dee74dc9")
     (property "Reference" "#PWR05"
       (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
@@ -987,31 +961,26 @@
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (instances
       (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "#PWR05")
-          (unit 1)
-        )
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "#PWR05") (unit 1))
       )
     )
-  )  (symbol
+  )
+  (symbol
     (lib_id "power:GND")
-    (at 152.4 76.2 0)
-    
+    (at 215.9 86.36 0)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "2bf55198-c0c9-433a-8ea3-05067962e9aa")
+    (uuid "2d06ee02-3e03-4a17-a7d6-1e336b48aa9f")
     (property "Reference" "#PWR06"
       (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
@@ -1021,31 +990,26 @@
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (instances
       (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "#PWR06")
-          (unit 1)
-        )
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "#PWR06") (unit 1))
       )
     )
-  )  (symbol
+  )
+  (symbol
     (lib_id "power:GND")
-    (at 200.66 96.52000000000001 0)
-    
+    (at 127 90.16999999999999 0)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "fc0d3249-2779-41a3-a893-fa16d3c7eedc")
+    (uuid "fefcf56c-08ac-4baa-839b-762143b9e59d")
     (property "Reference" "#PWR07"
       (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
@@ -1055,31 +1019,26 @@
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (instances
       (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "#PWR07")
-          (unit 1)
-        )
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "#PWR07") (unit 1))
       )
     )
-  )  (symbol
+  )
+  (symbol
     (lib_id "power:GND")
-    (at 104.14 76.2 0)
-    
+    (at 127 107.94999999999999 0)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "68ebabac-1a1e-4f0b-9293-277f1ce1e58b")
+    (uuid "76ac116c-6918-4452-a4c4-ff31cab1a4c7")
     (property "Reference" "#PWR08"
       (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
@@ -1089,31 +1048,26 @@
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (instances
       (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "#PWR08")
-          (unit 1)
-        )
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "#PWR08") (unit 1))
       )
     )
-  )  (symbol
+  )
+  (symbol
     (lib_id "power:GND")
-    (at 74.92999999999999 95.25 0)
-    
+    (at 127 125.72999999999999 0)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "5652be49-f4ad-49a3-9b7e-4e00c7d77925")
+    (uuid "d78c357d-4876-40fe-8ab2-9e744fe4b97c")
     (property "Reference" "#PWR09"
       (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
@@ -1123,32 +1077,230 @@
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (instances
       (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "#PWR09")
-          (unit 1)
-        )
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "#PWR09") (unit 1))
       )
     )
-  )  (symbol
-    (lib_id "power:+3V3")
-    (at 104.14 60.96 0)
-    
+  )
+  (symbol
+    (lib_id "power:GND")
+    (at 127 143.51000000000002 0)
     (unit 1)
     (exclude_from_sim no)
     (in_bom yes)
     (on_board yes)
     (dnp no)
-    (uuid "252cb51d-2c5e-4d5a-8654-6b602f5e8df7")
+    (uuid "8c0b892c-845f-4a07-b4e1-afff59fc6342")
     (property "Reference" "#PWR10"
+      (at 0 -2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "GND"
+      (at 0 2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (property "Datasheet" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (instances
+      (project "esp32_ws2812b_levelshifter"
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "#PWR10") (unit 1))
+      )
+    )
+  )
+  (symbol
+    (lib_id "power:GND")
+    (at 69.85 90.17 0)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "ccbe8a1e-a3f3-40b6-b7b1-d71b9465563f")
+    (property "Reference" "#PWR11"
+      (at 0 -2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "GND"
+      (at 0 2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (property "Datasheet" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (instances
+      (project "esp32_ws2812b_levelshifter"
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "#PWR11") (unit 1))
+      )
+    )
+  )
+  (symbol
+    (lib_id "power:GND")
+    (at 227.32999999999998 86.36 0)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "e18f989c-f747-41ef-b488-db5ed26af175")
+    (property "Reference" "#PWR12"
+      (at 0 -2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "GND"
+      (at 0 2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (property "Datasheet" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (instances
+      (project "esp32_ws2812b_levelshifter"
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "#PWR12") (unit 1))
+      )
+    )
+  )
+  (symbol
+    (lib_id "power:GND")
+    (at 69.85 146.05 0)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "21f92cf0-9f8c-4772-b491-de24b7d8ec49")
+    (property "Reference" "#PWR13"
+      (at 0 -2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "GND"
+      (at 0 2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (property "Datasheet" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (instances
+      (project "esp32_ws2812b_levelshifter"
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "#PWR13") (unit 1))
+      )
+    )
+  )
+  (symbol
+    (lib_id "power:+5V")
+    (at 69.85 77.47 0)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "419fd67d-df8c-4d1a-b9de-e9018c0c39ab")
+    (property "Reference" "#PWR14"
+      (at 0 -2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "+5V"
+      (at 0 2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (property "Datasheet" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (instances
+      (project "esp32_ws2812b_levelshifter"
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "#PWR14") (unit 1))
+      )
+    )
+  )
+  (symbol
+    (lib_id "power:+5V")
+    (at 227.32999999999998 73.66 0)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "c1dc9ced-8826-4c91-965c-1fb5a640545e")
+    (property "Reference" "#PWR15"
+      (at 0 -2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "+5V"
+      (at 0 2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (property "Datasheet" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (instances
+      (project "esp32_ws2812b_levelshifter"
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "#PWR15") (unit 1))
+      )
+    )
+  )
+  (symbol
+    (lib_id "power:+5V")
+    (at 69.85 133.34999999999997 0)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "fdf15937-f3ca-440f-8120-2d99df3647b1")
+    (property "Reference" "#PWR16"
+      (at 0 -2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "+5V"
+      (at 0 2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (property "Datasheet" ""
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
+    )
+    (instances
+      (project "esp32_ws2812b_levelshifter"
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "#PWR16") (unit 1))
+      )
+    )
+  )
+  (symbol
+    (lib_id "power:+3V3")
+    (at 69.85 74.93 0)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "d87e8ef1-c1ed-45c8-9e0c-ef53768f1bc5")
+    (property "Reference" "#PWR17"
       (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
     )
@@ -1157,243 +1309,65 @@
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (property "Datasheet" ""
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) (hide yes))
+      (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))
     )
     (instances
       (project "esp32_ws2812b_levelshifter"
-        (path "/af0e02aa-a343-48bf-a8da-5767b83c81b2"
-          (reference "#PWR10")
-          (unit 1)
-        )
+        (path "/b41aa868-7f65-4472-9856-b92578111106" (reference "#PWR17") (unit 1))
       )
     )
   )
 
-  (wire
-    (pts (xy 80.00999999999999 82.55) (xy 129.54 82.55))
-    (stroke (width 0) (type default))
-    (uuid "db29163f-30ff-46dd-9ae2-37d914ac8708")
-  )  (wire
-    (pts (xy 129.54 82.55) (xy 129.54 83.82000000000001))
-    (stroke (width 0) (type default))
-    (uuid "62d1e0a8-a03c-4255-99b6-9549931adfab")
-  )  (wire
-    (pts (xy 129.54 81.28) (xy 119.38 81.28))
-    (stroke (width 0) (type default))
-    (uuid "d623e4c0-9c41-49e8-b66a-ecc8debf919b")
-  )  (wire
-    (pts (xy 129.54 86.36) (xy 119.38 86.36))
-    (stroke (width 0) (type default))
-    (uuid "ccbb6bc7-dbab-4287-99c4-426db325de26")
-  )  (wire
-    (pts (xy 129.54 91.44000000000001) (xy 119.38 91.44000000000001))
-    (stroke (width 0) (type default))
-    (uuid "9f105a26-cb79-4de4-83fd-f369e6a147c0")
-  )  (wire
-    (pts (xy 149.85999999999999 96.52000000000001) (xy 154.94 96.52000000000001))
-    (stroke (width 0) (type default))
-    (uuid "a6b83c29-3d97-4249-b7f5-726ed4da0c1b")
-  )  (wire
-    (pts (xy 154.94 96.52000000000001) (xy 154.94 101.60000000000001))
-    (stroke (width 0) (type default))
-    (uuid "65488d63-1fb7-41a9-9cf5-9c7be4e17ae3")
-  )  (wire
-    (pts (xy 154.94 101.60000000000001) (xy 139.7 101.60000000000001))
-    (stroke (width 0) (type default))
-    (uuid "51ba564f-69c9-4f6d-97d3-f58e86cacbe0")
-  )  (wire
-    (pts (xy 119.38 81.28) (xy 119.38 91.44000000000001))
-    (stroke (width 0) (type default))
-    (uuid "a1567111-6351-4cc3-9163-27984dd4599d")
-  )  (wire
-    (pts (xy 119.38 91.44000000000001) (xy 119.38 101.60000000000001))
-    (stroke (width 0) (type default))
-    (uuid "45fc3ced-0a57-4466-a1ef-3e4524049e5e")
-  )  (wire
-    (pts (xy 119.38 101.60000000000001) (xy 139.7 101.60000000000001))
-    (stroke (width 0) (type default))
-    (uuid "e5402e27-f046-4176-ba6f-80db427100af")
-  )  (wire
-    (pts (xy 139.7 101.60000000000001) (xy 139.7 106.68))
-    (stroke (width 0) (type default))
-    (uuid "2d918693-ad4b-415a-b043-6c07f567f964")
-  )  (wire
-    (pts (xy 139.7 76.2) (xy 139.7 71.12))
-    (stroke (width 0) (type default))
-    (uuid "02e3a5b5-014e-4f6b-815c-2dfc1333305e")
-  )  (wire
-    (pts (xy 149.85999999999999 83.82000000000001) (xy 158.75 83.82000000000001))
-    (stroke (width 0) (type default))
-    (uuid "45357c6b-c770-4b36-9070-9130ae1cd93e")
-  )  (wire
-    (pts (xy 166.37 83.82000000000001) (xy 214.63 83.82000000000001))
-    (stroke (width 0) (type default))
-    (uuid "f224ec88-b107-4edb-9203-acc0595ab156")
-  )  (wire
-    (pts (xy 214.63 83.82000000000001) (xy 214.63 83.82))
-    (stroke (width 0) (type default))
-    (uuid "ed84396d-d205-44ca-9942-c1c55c92f32b")
-  )  (wire
-    (pts (xy 152.4 64.77) (xy 152.4 60.96))
-    (stroke (width 0) (type default))
-    (uuid "5fab7eb2-431c-4293-90cb-7f1646ab7266")
-  )  (wire
-    (pts (xy 152.4 72.39) (xy 152.4 76.2))
-    (stroke (width 0) (type default))
-    (uuid "7b6c7533-1efb-4938-8985-68ebd70d983a")
-  )  (wire
-    (pts (xy 200.66 85.09) (xy 200.66 81.28))
-    (stroke (width 0) (type default))
-    (uuid "464878fd-c591-41d5-8fa4-92d00c8aa299")
-  )  (wire
-    (pts (xy 200.66 92.71000000000001) (xy 200.66 96.52000000000001))
-    (stroke (width 0) (type default))
-    (uuid "ea9eda60-5bd4-4b7b-bcc5-4cf850ea31c2")
-  )  (wire
-    (pts (xy 104.14 64.77) (xy 104.14 60.96))
-    (stroke (width 0) (type default))
-    (uuid "a0b3de7c-cae8-4570-903b-97034127aa97")
-  )  (wire
-    (pts (xy 104.14 72.39) (xy 104.14 76.2))
-    (stroke (width 0) (type default))
-    (uuid "9fc48a86-b9c7-4040-a001-f4105f439523")
-  )  (wire
-    (pts (xy 80.00999999999999 85.09) (xy 80.00999999999999 68.58))
-    (stroke (width 0) (type default))
-    (uuid "73c83b2a-5cc1-4b1f-b783-9d9316906800")
-  )  (wire
-    (pts (xy 80.00999999999999 68.58) (xy 104.14 68.58))
-    (stroke (width 0) (type default))
-    (uuid "63d323de-399b-4bbb-831b-e033ca28ddc7")
-  )  (wire
-    (pts (xy 80.00999999999999 87.63) (xy 74.92999999999999 87.63))
-    (stroke (width 0) (type default))
-    (uuid "99548ac7-9a5a-4f00-92e7-f86593d31005")
-  )  (wire
-    (pts (xy 74.92999999999999 87.63) (xy 74.92999999999999 60.96))
-    (stroke (width 0) (type default))
-    (uuid "db5acce6-f223-47d2-a9c9-3aca4847f171")
-  )  (wire
-    (pts (xy 80.00999999999999 90.17) (xy 74.92999999999999 90.17))
-    (stroke (width 0) (type default))
-    (uuid "041821d4-6cbd-445a-8947-37bc153d4a8e")
-  )  (wire
-    (pts (xy 74.92999999999999 90.17) (xy 74.92999999999999 95.25))
-    (stroke (width 0) (type default))
-    (uuid "187db838-eb83-4ada-ab09-a552e4306979")
-  )  (wire
-    (pts (xy 214.63 86.36) (xy 209.54999999999998 86.36))
-    (stroke (width 0) (type default))
-    (uuid "1af70d47-2e3a-44f8-8091-682019fabee1")
-  )  (wire
-    (pts (xy 209.54999999999998 86.36) (xy 209.54999999999998 81.28))
-    (stroke (width 0) (type default))
-    (uuid "b1a61085-a85e-4ed7-a470-2efc50b15785")
-  )  (wire
-    (pts (xy 214.63 88.9) (xy 200.66 88.9))
-    (stroke (width 0) (type default))
-    (uuid "191a93d7-f6fe-4e87-85b3-369045184700")
-  )  (wire
-    (pts (xy 200.66 88.9) (xy 200.66 96.52000000000001))
-    (stroke (width 0) (type default))
-    (uuid "9e9cb1de-3459-4fe1-be87-fd2c5b2c71e2")
-  )  (wire
-    (pts (xy 80.00999999999999 107.95) (xy 74.92999999999999 107.95))
-    (stroke (width 0) (type default))
-    (uuid "8aa6906b-5f36-44d6-91b2-64c2d8701892")
-  )  (wire
-    (pts (xy 74.92999999999999 107.95) (xy 74.92999999999999 87.63))
-    (stroke (width 0) (type default))
-    (uuid "241201b2-6971-4b4d-ba21-6db215ec7e2e")
-  )  (wire
-    (pts (xy 80.00999999999999 110.49) (xy 74.92999999999999 110.49))
-    (stroke (width 0) (type default))
-    (uuid "c9ee9f9c-7537-49ab-9337-5a665a483941")
-  )  (wire
-    (pts (xy 74.92999999999999 110.49) (xy 74.92999999999999 90.17))
-    (stroke (width 0) (type default))
-    (uuid "0e994f40-cd6e-4841-b0f6-dffc9eceff58")
-  )
+  (wire (pts (xy 74.92999999999999 77.47) (xy 119.38 77.47)) (stroke (width 0) (type default)) (uuid "b0f34ad2-f70e-491e-ae6c-e68f483c994c"))
+  (wire (pts (xy 119.38 77.47) (xy 119.38 78.74)) (stroke (width 0) (type default)) (uuid "4a235577-d8eb-4eec-bc25-7f2bd7b4b354"))
+  (wire (pts (xy 127 85.08999999999999) (xy 127 90.16999999999999)) (stroke (width 0) (type default)) (uuid "ae0e5c50-7c61-4b80-b1b6-d08260dbc640"))
+  (wire (pts (xy 134.62 78.74) (xy 148.59 78.74)) (stroke (width 0) (type default)) (uuid "95e064db-9159-4724-9e97-2a50500caff5"))
+  (wire (pts (xy 156.21 78.74) (xy 232.41 78.74)) (stroke (width 0) (type default)) (uuid "d653dfdb-7710-44fd-acd3-0e6fb11e4b35"))
+  (wire (pts (xy 232.41 78.74) (xy 232.41 76.19999999999999)) (stroke (width 0) (type default)) (uuid "36661d6f-0041-47aa-8c0a-5f579dceff8d"))
+  (wire (pts (xy 127 102.86999999999999) (xy 127 107.94999999999999)) (stroke (width 0) (type default)) (uuid "2e069d7e-1bab-4b66-a1a1-722158edeae0"))
+  (wire (pts (xy 127 120.64999999999999) (xy 127 125.72999999999999)) (stroke (width 0) (type default)) (uuid "0ecee841-1cf2-4d69-9409-9935b1458b50"))
+  (wire (pts (xy 127 138.43) (xy 127 143.51000000000002)) (stroke (width 0) (type default)) (uuid "fc7c3d3a-1028-4d04-a963-14eafa0869e7"))
+  (wire (pts (xy 172.72 101.6) (xy 172.72 96.52)) (stroke (width 0) (type default)) (uuid "fd9383c8-bd21-4e9f-9580-d0dce181f25c"))
+  (wire (pts (xy 172.72 127.0) (xy 172.72 132.08)) (stroke (width 0) (type default)) (uuid "79099408-b860-41ad-9269-2ee3737f6257"))
+  (wire (pts (xy 185.42 102.87) (xy 185.42 99.06)) (stroke (width 0) (type default)) (uuid "fec8db30-2b14-4a7f-8787-b0e1a20a3502"))
+  (wire (pts (xy 185.42 110.49000000000001) (xy 185.42 114.30000000000001)) (stroke (width 0) (type default)) (uuid "37fc4ab8-adbb-46cd-a760-ab289322fb3e"))
+  (wire (pts (xy 215.9 74.92999999999999) (xy 215.9 71.11999999999999)) (stroke (width 0) (type default)) (uuid "73a93965-9f54-44b7-9537-6b3709005e0c"))
+  (wire (pts (xy 215.9 82.55) (xy 215.9 86.36)) (stroke (width 0) (type default)) (uuid "116a37a2-5d38-4c23-aeaf-497c7bec4ca7"))
+  (wire (pts (xy 74.92999999999999 80.01) (xy 69.85 80.01)) (stroke (width 0) (type default)) (uuid "5bab2038-87f6-4a74-a293-5437a3ec4f87"))
+  (wire (pts (xy 69.85 80.01) (xy 69.85 74.93)) (stroke (width 0) (type default)) (uuid "f8129d5f-e551-463e-85c5-962522ea8ed6"))
+  (wire (pts (xy 74.92999999999999 82.55) (xy 69.85 82.55)) (stroke (width 0) (type default)) (uuid "1de481fc-f4aa-4f6a-b111-8e3bd5d45432"))
+  (wire (pts (xy 69.85 82.55) (xy 69.85 77.47)) (stroke (width 0) (type default)) (uuid "3dee632f-1e54-48b5-9186-cf72843d3883"))
+  (wire (pts (xy 74.92999999999999 85.09) (xy 69.85 85.09)) (stroke (width 0) (type default)) (uuid "b2315338-e1ab-4c07-adb7-94f7fcda4e15"))
+  (wire (pts (xy 69.85 85.09) (xy 69.85 90.17)) (stroke (width 0) (type default)) (uuid "3b5c2126-774f-42b4-aee2-5945514364cc"))
+  (wire (pts (xy 232.41 78.74) (xy 227.32999999999998 78.74)) (stroke (width 0) (type default)) (uuid "c716dfe2-7337-4e31-a7ae-2406c9b3a5bb"))
+  (wire (pts (xy 227.32999999999998 78.74) (xy 227.32999999999998 73.66)) (stroke (width 0) (type default)) (uuid "e07f7377-859b-4d0e-acb1-b781d97d253b"))
+  (wire (pts (xy 232.41 81.28) (xy 227.32999999999998 81.28)) (stroke (width 0) (type default)) (uuid "84bcc8f4-554f-41a1-9cd4-976e2f045ff2"))
+  (wire (pts (xy 227.32999999999998 81.28) (xy 227.32999999999998 86.36)) (stroke (width 0) (type default)) (uuid "8c83ac14-6e7c-4d61-96b7-bd0adb0c5923"))
+  (wire (pts (xy 74.92999999999999 138.42999999999998) (xy 69.85 138.42999999999998)) (stroke (width 0) (type default)) (uuid "5a47dafc-d936-4ce4-9490-09463ab14c14"))
+  (wire (pts (xy 69.85 138.42999999999998) (xy 69.85 133.34999999999997)) (stroke (width 0) (type default)) (uuid "5432a4e4-8ab7-42e3-965c-66334c7ca72c"))
+  (wire (pts (xy 74.92999999999999 140.97) (xy 69.85 140.97)) (stroke (width 0) (type default)) (uuid "2e2bc923-c1ed-4e62-8772-be9fde0bfa00"))
+  (wire (pts (xy 69.85 140.97) (xy 69.85 146.05)) (stroke (width 0) (type default)) (uuid "801c82a3-9c1a-4347-b2b4-8192c94f8547"))
 
-  (no_connect
-    (at 129.54 88.9)
-    (uuid "06dee75c-4668-4259-a6a2-12b41cca515d")
-  )  (no_connect
-    (at 149.85999999999999 88.9)
-    (uuid "c7c1ed1a-4beb-4313-992d-376597e0af44")
-  )  (no_connect
-    (at 129.54 93.98)
-    (uuid "faf4d2e3-839f-46c5-a768-93ab7deedc75")
-  )  (no_connect
-    (at 149.85999999999999 93.98)
-    (uuid "76b30730-af17-4295-bd05-1d2f496f7214")
-  )  (no_connect
-    (at 129.54 96.52000000000001)
-    (uuid "489aa0e4-1aaf-409d-899c-854d76e9117c")
-  )  (no_connect
-    (at 149.85999999999999 91.44000000000001)
-    (uuid "4bc6e04b-ad1c-47d7-bebe-a8c29e39541d")
-  )
+  (no_connect (at 119.38 96.52) (uuid "a2f638ce-29bd-462f-ab1e-66b793cecfbd"))
+  (no_connect (at 134.62 96.52) (uuid "12aa684d-367f-4459-b9d4-c634c61155aa"))
+  (no_connect (at 119.38 114.3) (uuid "c93ecfa5-0a47-4b5c-9034-0ec2d737b883"))
+  (no_connect (at 134.62 114.3) (uuid "fa6e4b1a-a2b2-4117-a841-145a8c535f6c"))
+  (no_connect (at 119.38 132.08) (uuid "acb28142-964a-4d86-9aaa-5369aae7f2bc"))
+  (no_connect (at 134.62 132.08) (uuid "3fa23318-e5f4-49d6-8bd1-5da74db94cbe"))
 
-  (label "GPIO13_DATA"
-    (at 100.33 82.55 0)
-    (effects (font (size 1.27 1.27)))
-    (uuid "a1a43d4d-351e-4a5a-b9c1-af1b032832a0")
-  )  (label "WS2812B_DIN"
-    (at 175.26 83.82000000000001 0)
-    (effects (font (size 1.27 1.27)))
-    (uuid "5342d04f-deac-4bcc-825f-2db25ca0fbea")
-  )
+  (label "GPIO13_DATA" (at 95.25 77.47 0) (effects (font (size 1.27 1.27))) (uuid "024e1253-2f07-46e2-b6eb-b0b1ee64c345"))
+  (label "WS2812B_DIN" (at 162.56 78.74 0) (effects (font (size 1.27 1.27))) (uuid "9aebf6ca-bd56-4c83-bf67-74be99e70485"))
 
-  (junction
-    (at 119.38 86.36)
-    (diameter 0)
-    (color 0 0 0 0)
-    (uuid "c9b2e68b-65f1-4328-a3ea-4c7d313d25dd")
-  )  (junction
-    (at 139.7 101.60000000000001)
-    (diameter 0)
-    (color 0 0 0 0)
-    (uuid "6aedd807-8ed1-4b83-aaf8-cfcf3cc3f471")
-  )  (junction
-    (at 74.92999999999999 87.63)
-    (diameter 0)
-    (color 0 0 0 0)
-    (uuid "cba8c156-a17b-40a5-905d-8be4cce520f6")
-  )  (junction
-    (at 74.92999999999999 90.17)
-    (diameter 0)
-    (color 0 0 0 0)
-    (uuid "e6dcf15a-25b2-4bf6-9273-79eb78f72b58")
-  )  (junction
-    (at 200.66 96.52000000000001)
-    (diameter 0)
-    (color 0 0 0 0)
-    (uuid "9b3b00de-7ffd-4149-9cb3-501fe492fb25")
-  )
 
-  (text "NOTAS:\n1. SN74HCT125 (DIP-14) - Quad Buffer 3-State\n2. Todas ~OE ligadas ao GND (saidas habilitadas)\n3. Canal 1: GPIO13 (3.3V) -> 1A -> 1Y -> 100R -> WS2812B DIN (5V)\n4. Canais 2-4 disponiveis para uso futuro\n5. Capacitor 100nF entre VCC (pino 14) e GND (pino 7)\n6. Capacitor 1000uF proximo da fita LED WS2812B\n7. Resistor 62-100 Ohm no pino DIN do WS2812B"
-    (at 88.9 121.92 0)
-    (effects (font (size 1.27 1.27)) (justify left))
-    (uuid "90423577-f4df-46ab-b814-d6f2999a389c")
-  )  (text "J1 (ESP32):\nPin 1 = GPIO13\nPin 2 = 3.3V\nPin 3 = 5V\nPin 4 = GND"
-    (at 60.96 96.52 0)
-    (effects (font (size 1.27 1.27)) (justify left))
-    (uuid "590ebccb-1348-4ebc-9337-e997f87348b8")
-  )  (text "J2 (WS2812B):\nPin 1 = DIN\nPin 2 = VCC (5V)\nPin 3 = GND"
-    (at 208.28 96.52 0)
-    (effects (font (size 1.27 1.27)) (justify left))
-    (uuid "3379942e-0423-42aa-bc07-fa6841592bfc")
-  )
+
+  (text "NOTAS:\n1. SN74HCT125 (DIP-14) - Quad Buffer 3-State\n2. Todas ~OE -> GND (saidas habilitadas)\n3. Canal 1: GPIO13 -> 1A -> 1Y -> 100R -> WS2812B\n4. Canais 2-4: Nao conectados (reserva)\n5. C1: 100nF bypass entre VCC e GND\n6. C2: 1000uF bulk perto da fita LED\n7. Resistor 62-100 Ohm no DIN do WS2812B" (at 78.74 157.48 0) (effects (font (size 1.27 1.27)) (justify left)) (uuid "b3a5acb3-f007-4226-993a-c0abcf0817f6"))
+  (text "J1 (ESP32):\nPin1=GPIO13\nPin2=3.3V\nPin3=5V\nPin4=GND" (at 55.88 91.44 0) (effects (font (size 1.27 1.27)) (justify left)) (uuid "e5f9fee2-920b-4b36-a705-98db4a13baca"))
+  (text "J2 (WS2812B):\nPin1=DIN\nPin2=VCC\nPin3=GND" (at 228.6 91.44 0) (effects (font (size 1.27 1.27)) (justify left)) (uuid "6babf4ba-b371-4221-a15c-0d287a78fc9e"))
 
   (sheet_instances
-    (path "/"
-      (page "1")
-    )
+    (path "/" (page "1"))
   )
 )

@@ -66,7 +66,6 @@ O SN74HCT125 e um quad buffer com entradas compativeis TTL — aceita **3.3V com
 | R1 | Resistor | 62-100R | Axial | 1 |
 | C1 | Capacitor ceramico | 100nF | Disco 5mm | 1 |
 | C2 | Capacitor eletrolitico | 1000uF/10V | Radial 8mm | 1 |
-| C3 | Capacitor ceramico | 100nF | Disco 5mm | 1 |
 | J1 | Barra de pinos | 1x4 | 2.54mm | 1 |
 | J2 | Barra de pinos | 1x3 | 2.54mm | 1 |
 | J3 | Barra de pinos | 1x2 | 2.54mm | 1 |
