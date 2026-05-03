@@ -1,0 +1,375 @@
+(kicad_sch
+  (version 20231120)
+  (generator "eeschema")
+  (generator_version "8.0")
+  (uuid "c23ed474-5dc3-40d3-9b06-003c94273a75")
+  (paper "A4")
+  (title_block
+    (title "SN74AHCT125N Breakout Board")
+    (date "2025-05-03")
+    (rev "1.0")
+    (comment 1 "Level Shifter 3.3V to 5V")
+    (comment 2 "For ESP32 Radio Bluetooth Project")
+  )
+  (lib_symbols
+  )
+  (text "SN74AHCT125N - Quadruple Bus Buffer\nLevel Shifter 3.3V → 5V\n\nJ1: Input (ESP32 3.3V side)\nJ2: Output (5V side)\nC1: 100nF Bypass Capacitor\n\nTie ~{OE} pins LOW to enable outputs"
+    (exclude_from_sim no)
+    (at 30.48 30.48 0)
+    (effects
+      (font (size 1.524 1.524))
+      (justify left)
+    )
+    (uuid "34a96291-9736-408a-a255-58dd1ae80974")
+  )
+
+  (symbol
+    (lib_id "SN74AHCT125N:SN74AHCT125N")
+    (at 152.4 101.6 0)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "edfb4667-812b-4b95-9f65-0572887242d1")
+    (property "Reference" "U1"
+      (at 152.4 81.6 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "SN74AHCT125N"
+      (at 152.4 121.6 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "SN74AHCT125N:DIP-14_W7.62mm"
+      (at 152.4 123.6 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://www.ti.com/lit/ds/symlink/sn74ahct125.pdf"
+      (at 152.4 125.6 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  (symbol
+    (lib_id "SN74AHCT125N:C")
+    (at 177.8 76.2 0)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "2541d8e9-cc07-4aed-aeb8-deac49c51cec")
+    (property "Reference" "C1"
+      (at 179.8 76.2 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "100nF"
+      (at 179.8 78.2 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Footprint" "SN74AHCT125N:C_Disc_D5.0mm_W2.5mm_P2.50mm"
+      (at 177.8 80.2 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  (symbol
+    (lib_id "SN74AHCT125N:Conn_01x10_Pin")
+    (at 76.2 101.6 0)
+    (mirror x)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "3477a9d8-2801-410a-8618-a71bf164d3dd")
+    (property "Reference" "J1"
+      (at 76.2 84.6 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "INPUT"
+      (at 76.2 118.6 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "SN74AHCT125N:PinHeader_1x10_P2.54mm_Vertical"
+      (at 76.2 120.6 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  (symbol
+    (lib_id "SN74AHCT125N:Conn_01x06_Pin")
+    (at 220.98 96.52 0)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (dnp no)
+    (uuid "33ab2022-d2d0-4fb7-ae5e-d6cf95bb2b45")
+    (property "Reference" "J2"
+      (at 220.98 84.52 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "OUTPUT"
+      (at 220.98 108.52 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "SN74AHCT125N:PinHeader_1x06_P2.54mm_Vertical"
+      (at 220.98 110.52 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  (symbol
+    (lib_id "SN74AHCT125N:VCC")
+    (at 152.4 80.6 0)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom no)
+    (on_board no)
+    (dnp no)
+    (uuid "262e1ce6-7655-4161-b305-02c408c3738e")
+    (property "Reference" "#PWR01"
+      (at 152.4 76.6 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "VCC"
+      (at 152.4 78.6 0)
+      (effects (font (size 1.27 1.27)))
+    )
+  )
+
+  (symbol
+    (lib_id "SN74AHCT125N:GND")
+    (at 152.4 121.6 0)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom no)
+    (on_board no)
+    (dnp no)
+    (uuid "3439c19d-657f-49e8-8e57-9ddf3cbd31e2")
+    (property "Reference" "#PWR02"
+      (at 152.4 125.6 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "GND"
+      (at 152.4 123.6 0)
+      (effects (font (size 1.27 1.27)))
+    )
+  )
+
+  (symbol
+    (lib_id "SN74AHCT125N:VCC")
+    (at 177.8 71.2 0)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom no)
+    (on_board no)
+    (dnp no)
+    (uuid "d9bcc858-e412-40f5-a9bc-ef7f0aaeb290")
+    (property "Reference" "#PWR03"
+      (at 177.8 67.2 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "VCC"
+      (at 177.8 69.2 0)
+      (effects (font (size 1.27 1.27)))
+    )
+  )
+
+  (symbol
+    (lib_id "SN74AHCT125N:GND")
+    (at 177.8 81.2 0)
+    (unit 1)
+    (exclude_from_sim no)
+    (in_bom no)
+    (on_board no)
+    (dnp no)
+    (uuid "33ef6d77-0446-4ba5-8dc0-d2f7be743e43")
+    (property "Reference" "#PWR04"
+      (at 177.8 85.2 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "GND"
+      (at 177.8 83.2 0)
+      (effects (font (size 1.27 1.27)))
+    )
+  )
+
+  (label "VCC"
+    (at 72.39 90.17 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "21863881-e7ea-4728-8ed0-481d44d2acc8")
+  )
+  (label "GND"
+    (at 72.39 92.71 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "7e7767bc-e65a-4a38-899a-13d98d3cf050")
+  )
+  (label "~{OE1}"
+    (at 72.39 95.25 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "37208298-fdff-444c-ad88-04fd146a9a0e")
+  )
+  (label "1A"
+    (at 72.39 97.79 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "76bd9d9a-489a-49c5-a91f-acc76af10847")
+  )
+  (label "~{OE2}"
+    (at 72.39 100.33 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "22aed12d-ec8d-47c9-9985-1a1376899d16")
+  )
+  (label "2A"
+    (at 72.39 102.87 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "c27e05d6-6ab8-45bb-b0a6-99b44805f3fa")
+  )
+  (label "~{OE3}"
+    (at 72.39 105.41 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "9bd8f16a-f8bb-452f-ab49-9a928c75f9c9")
+  )
+  (label "3A"
+    (at 72.39 107.95 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "5490bccb-b53d-4c87-9038-91dbe4ebf73a")
+  )
+  (label "~{OE4}"
+    (at 72.39 110.49 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "3bdb4b1e-31ca-4e81-a917-31818ab868c0")
+  )
+  (label "4A"
+    (at 72.39 113.03 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "f1176357-e667-4ff4-b439-0dbf0cba4fca")
+  )
+  (label "~{OE1}"
+    (at 143.51 91.44 180)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "96bcb985-acfb-4630-ad1b-6bb4bbd13841")
+  )
+  (label "1A"
+    (at 143.51 93.98 180)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "1f56f2dd-155b-4e98-89ff-b82a9b14c807")
+  )
+  (label "~{OE2}"
+    (at 143.51 96.52 180)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "462ebbbb-cc1a-476f-b2ea-776ee9c8c9dd")
+  )
+  (label "2A"
+    (at 143.51 99.06 180)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "1de1ac89-cab8-44aa-a7aa-8565a9785504")
+  )
+  (label "~{OE3}"
+    (at 143.51 106.68 180)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "6a4be1b3-f924-4bf5-b802-d9a65ddb7ed9")
+  )
+  (label "3A"
+    (at 143.51 104.14 180)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "24ab2be9-08f4-4ed4-8ac8-979a51961841")
+  )
+  (label "~{OE4}"
+    (at 143.51 111.76 180)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "ad6465c0-436b-445f-bad2-5caf7d28d6fb")
+  )
+  (label "4A"
+    (at 143.51 109.22 180)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "72abb64a-27a8-4c01-8344-fdbbff5a620a")
+  )
+  (label "1Y"
+    (at 161.29 91.44 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "47e57bde-b708-45ea-94e1-879835ad3df6")
+  )
+  (label "2Y"
+    (at 161.29 96.52 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "24872084-3897-42d4-b27b-27ac98684146")
+  )
+  (label "3Y"
+    (at 161.29 101.60 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "982eb4f9-404a-4e35-a6b7-9afd2e53ecb3")
+  )
+  (label "4Y"
+    (at 161.29 106.68 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "b41282ea-7e39-4a8c-94fe-a90619440657")
+  )
+  (label "VCC"
+    (at 217.17 90.17 180)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "e5669857-80c5-4583-a3aa-eb456b442ff6")
+  )
+  (label "GND"
+    (at 217.17 92.71 180)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "49c3c994-52ce-4e6c-8aa8-82bb1317fceb")
+  )
+  (label "1Y"
+    (at 217.17 95.25 180)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "39c79bbe-6330-4220-b9b8-90153202677d")
+  )
+  (label "2Y"
+    (at 217.17 97.79 180)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "1851cb06-86ec-47e3-a2a0-5a92c80c9d9b")
+  )
+  (label "3Y"
+    (at 217.17 100.33 180)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "a6f11fda-f4b8-4885-9e28-c872b079d319")
+  )
+  (label "4Y"
+    (at 217.17 102.87 180)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "faf55242-b0f2-4073-9fd0-56d8ef5c2647")
+  )
+  (wire
+    (pts (xy 152.40 85.09) (xy 152.40 80.60))
+    (stroke (width 0) (type default))
+    (uuid "920fe251-88cd-4536-87f5-b7212a3966eb")
+  )
+  (wire
+    (pts (xy 152.40 118.11) (xy 152.40 121.60))
+    (stroke (width 0) (type default))
+    (uuid "372d6016-b619-4066-94d9-35cbf5596571")
+  )
+  (wire
+    (pts (xy 177.80 73.66) (xy 177.80 71.20))
+    (stroke (width 0) (type default))
+    (uuid "15e2298f-62d8-4c64-aa94-5b886ca6488b")
+  )
+  (wire
+    (pts (xy 177.80 78.74) (xy 177.80 81.20))
+    (stroke (width 0) (type default))
+    (uuid "63d18565-bee2-47a3-a4ef-2963bc1bdf76")
+  )
+
+  (sheet_instances
+    (path "/"
+      (page "1")
+    )
+  )
+  (symbol_instances
+    (path "/edfb4667-812b-4b95-9f65-0572887242d1" (reference "U1") (unit 1) (value "SN74AHCT125N") (footprint "SN74AHCT125N:DIP-14_W7.62mm"))
+    (path "/2541d8e9-cc07-4aed-aeb8-deac49c51cec" (reference "C1") (unit 1) (value "100nF") (footprint "SN74AHCT125N:C_Disc_D5.0mm_W2.5mm_P2.50mm"))
+    (path "/3477a9d8-2801-410a-8618-a71bf164d3dd" (reference "J1") (unit 1) (value "INPUT") (footprint "SN74AHCT125N:PinHeader_1x10_P2.54mm_Vertical"))
+    (path "/33ab2022-d2d0-4fb7-ae5e-d6cf95bb2b45" (reference "J2") (unit 1) (value "OUTPUT") (footprint "SN74AHCT125N:PinHeader_1x06_P2.54mm_Vertical"))
+    (path "/262e1ce6-7655-4161-b305-02c408c3738e" (reference "#PWR01") (unit 1) (value "VCC") (footprint ""))
+    (path "/3439c19d-657f-49e8-8e57-9ddf3cbd31e2" (reference "#PWR02") (unit 1) (value "GND") (footprint ""))
+    (path "/d9bcc858-e412-40f5-a9bc-ef7f0aaeb290" (reference "#PWR03") (unit 1) (value "VCC") (footprint ""))
+    (path "/33ef6d77-0446-4ba5-8dc0-d2f7be743e43" (reference "#PWR04") (unit 1) (value "GND") (footprint ""))
+  )
+)
