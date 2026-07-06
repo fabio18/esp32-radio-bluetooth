@@ -1,6 +1,6 @@
 /**
- * ESP32 Radio Bluetooth - WS2812B LED Effects
- * LED strip reativa ao som com múltiplos efeitos
+ * ESP32 Kindlelaser Max 260W - LED Status Effects
+ * WS2812B LED strip for machine status indication
  */
 
 #ifndef LED_EFFECTS_H
@@ -16,41 +16,33 @@ public:
 
     void begin();
     void update();
+
+    // Status control
+    void setStatus(LEDStatus status);
+    LEDStatus getStatus() const;
+    const char* getStatusName() const;
+
+    // Brightness
     void setBrightness(uint8_t brightness);
     uint8_t getBrightness() const;
-    void setEffect(LEDEffect effect);
-    LEDEffect getEffect() const;
-    void nextEffect();
-    void cycleBrightness();
-    void setAudioLevel(uint16_t level);
-
-    const char* getEffectName() const;
 
 private:
     CRGB _leds[LED_COUNT];
-    LEDEffect _currentEffect;
+    LEDStatus _currentStatus;
     uint8_t _brightness;
-    uint16_t _audioLevel;     // 0-4095 raw ADC
-    uint8_t _audioSmooth;     // 0-255 smoothed
-    uint8_t _peak;
-    uint8_t _peakDecay;
     uint8_t _hue;
     unsigned long _lastUpdate;
+    uint8_t _pulseVal;
+    bool _pulseDir;
 
-    // Audio processing
-    void readAudio();
-    uint8_t getAudioByte();
-
-    // Effect functions
+    // Effects
     void effectOff();
-    void effectVUMeter();
-    void effectSpectrum();
-    void effectPulse();
-    void effectRainbow();
-    void effectFire();
-
-    // Helpers
-    CRGB heatColor(uint8_t temperature);
+    void effectIdle();       // Blue breathing
+    void effectReady();      // Solid green
+    void effectCutting();    // Red fast pulse
+    void effectWarning();    // Yellow blink
+    void effectError();      // Red blink
+    void effectCooldown();   // Blue gradient sweep
 };
 
 #endif

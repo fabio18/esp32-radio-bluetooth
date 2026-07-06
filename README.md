@@ -1,96 +1,88 @@
-# ESP32 Radio Bluetooth com Alexa — Pioneer Style
+# ESP32 Kindlelaser Max 260W — Metal Cutting Controller
 
-Rádio FM com Bluetooth para conectar com a **Amazon Alexa** usando ESP32.
-Interface visual estilo **Pioneer automotivo** com controle 100% pela **tela touch**.
-**LED WS2812B reativo ao som** com 5 efeitos visuais!
+Painel de controle **touch screen** para máquina de corte a laser CO2 **Kindlelaser Max 130W/260W**.
+Interface visual industrial com **presets de corte de metal**, monitoramento de segurança e LEDs de status.
+
+## Funcionalidades
+
+- **Controle de potência** PWM (5-99%) com display em Watts
+- **Controle de velocidade** de corte (1-80 mm/s)
+- **12 presets de material** (Aço Carbono, Inox, Alumínio) com espessuras
+- **Monitoramento de segurança**: fluxo de água, tampa, temperatura, E-stop
+- **Pulso de teste** para alinhamento do laser
+- **Ar comprimido** e **exaustor** controlados pela tela
+- **LED WS2812B** para indicação visual de status da máquina
+- **Interface touch** — sem botões físicos
 
 ## Componentes
 
 | Componente | Descrição |
 |---|---|
-| **ESP32 DevKit** | Microcontrolador com Wi-Fi e Bluetooth |
-| **TEA5767** | Módulo Rádio FM Estéreo (76-108 MHz) com antena |
-| **ILI9341 TFT 2.4"** | Display 240x320 V1.3 **com touch XPT2046** |
-| DAC I2S | MAX98357A ou PCM5102 (saída de áudio BT) |
-| **WS2812B** | Fita LED endereçável (30 LEDs) reativa ao som |
-| Amplificador | PAM8403 ou similar (saída de áudio FM) |
-| Alto-falantes | 2x 3W 4Ω (estéreo) |
+| **ESP32 DevKit** | Microcontrolador com Wi-Fi (para monitoramento futuro) |
+| **ILI9341 TFT 2.4"** | Display 240x320 **com touch XPT2046** |
+| **WS2812B** | Fita LED (30 LEDs) para status da máquina |
+| **Optoacoplador** | 4N35 ou PC817 — isolamento ESP32 ↔ PSU laser |
+| **Conversor de nível** | 3.3V → 5V para sinal PWM |
+| **Relé 5V (2ch)** | Para ar comprimido e exaustor |
+| **Sensor de fluxo** | Fluxo de água (tipo YF-S201) |
+| **NTC 10kΩ** | Sensor de temperatura da água |
+| **Botão E-STOP** | Emergência (NC - normalmente fechado) |
+| **Chave de tampa** | Microswitch na porta da máquina |
 
-> **Sem botões físicos!** Tudo é controlado pela tela touch.
+## Layout da Tela Touch
 
-## Visual Pioneer
-
-Interface inspirada em rádios automotivos Pioneer/Kenwood:
-
-- Fundo escuro com cores **neon cyan/blue**
-- Frequência em **dígitos grandes** com efeito glow
-- **Equalizador animado** com barras de espectro coloridas
-- Botões touch com **bordas luminosas** estilo automotivo
-- Barra de volume com gradiente de cor
-- Medidor de sinal estilo LED
-- Indicadores STEREO/MONO
-- Preset strip com navegação por toque
-- **Fita LED WS2812B** reativa ao áudio com 5 efeitos
-
-### Layout da Tela FM
 ```
 ┌─────────────────────────────┐
-│ ESP32 RADIO          [FM]   │  Header
+│ KINDLELASER 260W    [STATUS]│  Header
 ├─────────────────────────────┤
-│ STEREO          SIG ▮▮▮▮▯  │  Status
+│ MAT: Aco 2.0mm        [O2] │  Preset de material
 ├─────────────────────────────┤
-│                             │
-│        101.1                │  Frequência (grande, cyan)
-│        FM MHz               │
-│                             │
-│  ▎▌█▌▎█▌▎▌█▎▌▎█▌▎█        │  EQ Visualizer
+│   POTENCIA: 95%  (247W)    │  Potência (grande)
+│   VELOCIDADE: 12 mm/s      │  Velocidade
 ├─────────────────────────────┤
-│     P3/10  93.7 MHz         │  Preset
+│ [POT-] [POT+] [SPD-] [SPD+]│  Controles pot/velocidade
+│ [<MAT]  [PULSO]  [MAT>]   │  Material presets
+│ [AR]  [EXAUST]  [E-STOP]  │  Auxiliares
+│ [═══ LASER ON/OFF ════════]│  Botão principal
 ├─────────────────────────────┤
-│ [<<SEEK] [<P] [P>] [SEEK>>]│  Controles Seek/Preset
-│ [VOL -]  [MUTE]   [VOL +]  │  Volume/Mute
-│ [LED: VU METER] [BRILHO]   │  LED Controls
-│ [═══════ BLUETOOTH ════════]│  Trocar modo
+│ ████████████████░░░░  95%  │  Barra de potência
 ├─────────────────────────────┤
-│ ████████████░░░░░░░░░  80   │  Volume slider
+│ H2O:OK LID:OK 25°C SEGURO │  Status de segurança
 └─────────────────────────────┘
 ```
-
-### Layout da Tela Bluetooth
-```
-┌─────────────────────────────┐
-│ ESP32 RADIO          [BT]   │  Header
-├─────────────────────────────┤
-│          ╭────╮             │
-│          │ BT │             │  Ícone BT com glow
-│          ╰────╯             │
-│       CONECTADO             │
-│         Alexa               │
-│      >> TOCANDO >>          │
-│  ▎▌█▌▎█▌▎▌█▎▌▎█▌▎█        │  EQ Visualizer
-├─────────────────────────────┤
-│ [══════ > TOCAR ═══════════]│  Play/Pause
-│ [VOL -]  [MUTE]   [VOL +]  │  Volume/Mute
-│ [LED: VU METER] [BRILHO]   │  LED Controls
-│ [═══════ FM RADIO ═════════]│  Trocar modo
-├─────────────────────────────┤
-│ ████████████░░░░░░░░░  80   │  Volume slider
-└─────────────────────────────┘
-```
-
----
 
 ## Diagrama de Conexões
 
-### TEA5767 → ESP32 (I2C)
+### ESP32 → PSU Laser (Kindlelaser Max 260W)
 
 ```
-TEA5767      ESP32
-───────      ─────
-SDA    ───── GPIO 21
-SCL    ───── GPIO 22
-VCC    ───── 3.3V
-GND    ───── GND
+ESP32 GPIO 25 (PWM) ──[330Ω]──→ Conversor 3.3V→5V ──→ PSU "IN" (0-5V potência)
+ESP32 GPIO 26       ──[1kΩ]──→ Optoacoplador 4N35 ──→ PSU "L-ON" (Laser Enable)
+                                 (isolamento galvânico obrigatório!)
+```
+
+### ESP32 → Relés de Controle
+
+```
+ESP32 GPIO 14  ──→ Relé CH1 ──→ Solenoide ar comprimido (24V)
+ESP32 GPIO 12  ──→ Relé CH2 ──→ Exaustor/ventilação (220V)
+```
+
+### ESP32 ← Sensores de Segurança
+
+```
+Sensor de Fluxo (YF-S201)  ──→ GPIO 33 (INPUT_PULLUP)
+Chave de Tampa (NC)         ──→ GPIO 32 (INPUT_PULLUP)
+Botão E-STOP (NC)           ──→ GPIO 39 (VN - INPUT)
+NTC 10kΩ (divisor)          ──→ GPIO 35 (ADC)
+```
+
+### Circuito NTC Temperatura
+
+```
+3.3V ──[10kΩ]──┬──[NTC 10kΩ]── GND
+               │
+               └── GPIO 35 (ADC)
 ```
 
 ### ILI9341 TFT + Touch → ESP32 (SPI)
@@ -105,24 +97,9 @@ CS     ───── GPIO 15       Chip Select Display
 DC     ───── GPIO  2       Data/Command
 RST    ───── GPIO  4       Reset
 LED    ───── 3.3V          Backlight
-T_CS   ───── GPIO 27       Chip Select Touch (XPT2046)
+T_CS   ───── GPIO 27       Chip Select Touch
 T_IRQ  ───── GPIO 34       Touch Interrupt (opcional)
 VCC    ───── 3.3V
-GND    ───── GND
-```
-
-> O display e o touch compartilham o barramento SPI (MOSI, MISO, SCK).
-> Cada um tem seu próprio CS (Chip Select).
-
-### DAC I2S (Saída de Áudio Bluetooth)
-
-```
-DAC I2S      ESP32
-───────      ─────
-BCLK   ───── GPIO  5
-LRC    ───── GPIO 17
-DIN    ───── GPIO 16
-VCC    ───── 3.3V/5V
 GND    ───── GND
 ```
 
@@ -132,29 +109,9 @@ GND    ───── GND
 WS2812B      ESP32
 ───────      ─────
 DIN    ───── GPIO 13       Data (com resistor 330Ω)
-VCC    ───── 5V            Alimentação (usar fonte externa para >10 LEDs)
-GND    ───── GND           Compartilhado com ESP32
+VCC    ───── 5V            Fonte externa
+GND    ───── GND           Compartilhado
 ```
-
-### Entrada de Áudio para LEDs (Divisor de Tensão)
-
-```
-Saída de Áudio (FM ou amplificador)
-     │
-  [10kΩ]
-     │
-     ├───── GPIO 36 (VP - ADC)
-     │
-  [10kΩ]
-     │
-  [100nF] capacitor para filtrar ruído
-     │
-    GND
-```
-
-> Conecte a saída de áudio (após o amplificador) ao divisor de tensão.
-> O capacitor de 100nF filtra ruído de alta frequência.
-> GPIO 36 (VP) é ADC1_CH0, sem conflito com Wi-Fi/BT.
 
 ### Diagrama Completo
 
@@ -162,38 +119,91 @@ Saída de Áudio (FM ou amplificador)
                     ┌─────────────────────┐
                     │     ESP32 DevKit     │
                     │                     │
-   TEA5767 ────I2C──┤ GPIO21(SDA)         │
-   (FM Radio)       │ GPIO22(SCL)         │
+  PSU Laser ──PWM──┤ GPIO25 (PWM)        │── 20kHz → 0-5V potência
+  (Kindlelaser)     │ GPIO26 (ENABLE)     │── Optoacoplador → L-ON
                     │                     │
-   ILI9341 ───SPI──┤ GPIO23(MOSI)        │── compartilhado
-   (Display)        │ GPIO19(MISO)        │── com touch
-                    │ GPIO18(SCK)         │── XPT2046
-                    │ GPIO15(CS Display)  │
-                    │ GPIO2 (DC)          │
-                    │ GPIO4 (RST)         │
-                    │                     │
-   XPT2046 ────────┤ GPIO27(CS Touch)    │
-   (Touch)          │ GPIO34(IRQ)         │
-                    │                     │
-   DAC I2S  ───────┤ GPIO5 (BCLK)       │
-   (BT Audio)       │ GPIO17(LRC)         │
-                    │ GPIO16(DOUT)        │
-                    │                     │
-   WS2812B ────────┤ GPIO13(LED Data)    │
-   (LED Strip)      │                     │
-                    │                     │
-   Audio In ───ADC──┤ GPIO36(VP - ADC)    │
-   (Divisor)        │                     │
-                    └─────────────────────┘
+  ILI9341 ───SPI──┤ GPIO23 (MOSI)       │── compartilhado
+  (Display)        │ GPIO19 (MISO)       │── com touch
+                   │ GPIO18 (SCK)        │── XPT2046
+                   │ GPIO15 (CS Display) │
+                   │ GPIO2  (DC)         │
+                   │ GPIO4  (RST)        │
+                   │                     │
+  XPT2046 ────────┤ GPIO27 (CS Touch)   │
+  (Touch)          │                     │
+                   │                     │
+  Ar Comprimido ──┤ GPIO14 (Relé)       │── Solenoide 24V
+  Exaustor ───────┤ GPIO12 (Relé)       │── Ventilação 220V
+                   │                     │
+  WS2812B ────────┤ GPIO13 (LED Data)   │
+  (Status LEDs)    │                     │
+                   │                     │
+  Sensor Fluxo  ──┤ GPIO33 (INPUT)      │── Água OK?
+  Chave Tampa  ───┤ GPIO32 (INPUT)      │── Tampa fechada?
+  E-STOP  ────────┤ GPIO39 (INPUT)      │── Emergência?
+  NTC Temp  ──ADC─┤ GPIO35 (ADC)        │── Temperatura água
+                   │                     │
+                   └─────────────────────┘
 ```
+
+---
+
+## Presets de Corte de Metal (Kindlelaser 260W)
+
+| # | Material | Espessura | Potência | Velocidade | Gás |
+|---|---|---|---|---|---|
+| 1 | Aço Carbono | 0.5mm | 70% | 30 mm/s | O₂ |
+| 2 | Aço Carbono | 1.0mm | 85% | 20 mm/s | O₂ |
+| 3 | Aço Carbono | 1.5mm | 92% | 15 mm/s | O₂ |
+| 4 | Aço Carbono | 2.0mm | 95% | 12 mm/s | O₂ |
+| 5 | Aço Carbono | 3.0mm | 99% | 8 mm/s | O₂ |
+| 6 | Inox | 0.5mm | 75% | 25 mm/s | N₂ |
+| 7 | Inox | 1.0mm | 90% | 15 mm/s | N₂ |
+| 8 | Inox | 1.5mm | 95% | 10 mm/s | N₂ |
+| 9 | Inox | 2.0mm | 99% | 6 mm/s | N₂ |
+| 10 | Alumínio | 0.5mm | 80% | 20 mm/s | N₂ |
+| 11 | Alumínio | 1.0mm | 92% | 12 mm/s | N₂ |
+| 12 | Alumínio | 1.5mm | 99% | 7 mm/s | N₂ |
+
+> **Nota:** Estes valores são pontos de partida. Ajuste conforme o estado do tubo, lente e condições do material. A Kindlelaser 130W corta até ~2mm de aço; a 260W até ~3mm.
+
+---
+
+## Sistema de Segurança
+
+O sistema implementa **4 camadas de segurança**:
+
+| Sensor | Condição para operar | Ação se falhar |
+|---|---|---|
+| **Fluxo de água** | Sensor detecta fluxo (LOW) | Desliga laser imediatamente |
+| **Tampa** | Microswitch fechado (LOW) | Desliga laser imediatamente |
+| **E-STOP** | Botão não pressionado (HIGH) | Desliga TUDO (emergency stop) |
+| **Temperatura** | < 35°C | Desliga laser + aviso |
+
+Adicionalmente:
+- **Tempo máximo de corte contínuo**: 5 minutos → pausa obrigatória
+- **Potência máxima limitada**: 99% (protege vida útil do tubo)
+- **Ar comprimido obrigatório**: não pode ser desligado durante corte
+- **Exaustor automático**: liga junto com o laser
+
+---
+
+## Indicação LED (WS2812B)
+
+| Status | Efeito LED | Significado |
+|---|---|---|
+| **IDLE** | Azul pulsante (respiração) | Máquina em espera |
+| **PRONTO** | Verde fixo | Segurança OK, pronto para cortar |
+| **CORTANDO** | Vermelho pulsante rápido | Laser ativo! |
+| **AVISO** | Amarelo piscante | Temperatura alta ou pausa |
+| **ERRO** | Vermelho piscante | Falha de segurança |
+| **RESFRIANDO** | Azul gradiente | Aguardando resfriamento |
 
 ---
 
 ## Como Compilar e Gravar
 
-### Opção 1: PlatformIO (recomendado)
-
-**Pré-requisitos:** Instale o [PlatformIO](https://platformio.org/install)
+### PlatformIO (recomendado)
 
 ```bash
 # Compilar
@@ -206,45 +216,13 @@ pio run --target upload
 pio device monitor
 ```
 
-> As bibliotecas são instaladas automaticamente pelo PlatformIO.
+### Arduino IDE
 
-### Opção 2: Arduino IDE
-
-**Pré-requisitos:**
-
-1. Instale o [Arduino IDE](https://www.arduino.cc/en/software) (1.8.x ou 2.x)
-2. Adicione o suporte ESP32:
-   - Vá em **Arquivo → Preferências**
-   - Em "URLs Adicionais para Gerenciadores de Placas" adicione:
-     ```
-     https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
-     ```
-   - Vá em **Ferramentas → Placa → Gerenciador de Placas**
-   - Pesquise "ESP32" e instale **esp32 by Espressif Systems**
-
-3. Instale as bibliotecas (**Sketch → Incluir Biblioteca → Gerenciar Bibliotecas**):
-   - **TFT_eSPI** by Bodmer
-   - **FastLED** by Daniel Garcia
-   - **ESP32-A2DP** by Phil Schatzmann
-   - **arduino-audio-tools** by Phil Schatzmann
-
-4. **IMPORTANTE** — Configure o TFT_eSPI:
-   - Copie o arquivo `arduino/esp32_radio_bluetooth/User_Setup.h`
-   - Cole na pasta da biblioteca TFT_eSPI (substituindo o existente):
-     - **Windows:** `Documentos/Arduino/libraries/TFT_eSPI/User_Setup.h`
-     - **Mac:** `~/Documents/Arduino/libraries/TFT_eSPI/User_Setup.h`
-     - **Linux:** `~/Arduino/libraries/TFT_eSPI/User_Setup.h`
-
-5. Abra o arquivo `arduino/esp32_radio_bluetooth/esp32_radio_bluetooth.ino`
-
-6. Configure a placa em **Ferramentas**:
-   - **Placa:** ESP32 Dev Module
-   - **Partition Scheme:** Huge APP (3MB No OTA/1MB SPIFFS)
-   - **Upload Speed:** 921600
-   - **Flash Size:** 4MB
-   - **Porta:** selecione a porta COM do ESP32
-
-7. Clique em **Upload** (→)
+1. Instale o suporte ESP32 (URL: `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json`)
+2. Instale bibliotecas: **TFT_eSPI**, **FastLED**
+3. Copie `arduino/esp32_radio_bluetooth/User_Setup.h` para a pasta do TFT_eSPI
+4. Configure: ESP32 Dev Module, Huge APP (3MB), 921600 baud
+5. Upload
 
 ---
 
@@ -252,81 +230,33 @@ pio device monitor
 
 ### Primeiro Boot
 
-1. Tela de splash com logo "ESP32 RADIO" estilo Pioneer
-2. Inicia automaticamente no **modo FM** (101.1 MHz)
-3. Toque na tela para controlar
+1. Tela splash "KINDLELASER MAX 260W"
+2. Verifica condições de segurança
+3. Se tudo OK → status "PRONTO" (LED verde)
 
-### Controles Touch — Modo FM
+### Controles Touch
 
-| Botão na tela | Função |
+| Botão | Função |
 |---|---|
-| **<< SEEK** | Buscar estação anterior |
-| **SEEK >>** | Buscar próxima estação |
-| **<P** | Preset anterior |
-| **P>** | Próximo preset |
-| **VOL -** | Diminuir volume |
-| **VOL +** | Aumentar volume |
-| **MUTE** | Ligar/desligar mudo |
-| **VU METER** (LED) | Trocar efeito LED: OFF → VU → SPECTRUM → PULSE → RAINBOW → FIRE |
-| **BRILHO** | Ciclar brilho LED: 50 → 100 → 150 → 200 → 250 |
-| **BLUETOOTH** | Trocar para modo BT |
+| **POT-** / **POT+** | Diminuir/aumentar potência (±5%) |
+| **SPD-** / **SPD+** | Diminuir/aumentar velocidade (±1 mm/s) |
+| **<MAT** / **MAT>** | Trocar preset de material |
+| **PULSO** | Disparo de teste (100ms) para alinhamento |
+| **AR** | Liga/desliga ar comprimido |
+| **EXAUST** | Liga/desliga exaustor |
+| **E-STOP** | Parada de emergência (software) |
+| **LASER ON/OFF** | Liga/desliga o laser |
 
-### Controles Touch — Modo Bluetooth
+### Sequência de Operação
 
-| Botão na tela | Função |
-|---|---|
-| **> TOCAR / \|\| PAUSAR** | Play/Pause |
-| **VOL -** | Diminuir volume |
-| **VOL +** | Aumentar volume |
-| **MUTE** | Ligar/desligar mudo |
-| **VU METER** (LED) | Trocar efeito LED |
-| **BRILHO** | Ciclar brilho LED |
-| **FM RADIO** | Trocar para modo FM |
-
-### Conectar com Alexa
-
-1. Toque em **BLUETOOTH** para entrar no modo BT
-2. Na tela aparecerá "AGUARDANDO..."
-3. No app Alexa:
-   - **Dispositivos** → **Echo & Alexa** → seu Echo
-   - **Bluetooth** → **Parear novo dispositivo**
-   - Selecione **"ESP32 Radio"**
-4. Após conectar, a tela mostrará "CONECTADO"
-5. Diga: *"Alexa, toque música"* — o áudio sai pelo ESP32!
-6. O equalizador animado responde ao áudio
-7. A fita LED WS2812B também reage ao som!
-
-### Efeitos LED WS2812B
-
-| Efeito | Descrição |
-|---|---|
-| **OFF** | LEDs desligados |
-| **VU METER** | Barra verde → amarelo → vermelho (tipo medidor de volume) |
-| **SPECTRUM** | Espectro de cores que muda com o áudio |
-| **PULSE** | Pulso de cor que detecta batidas |
-| **RAINBOW** | Arco-íris cuja velocidade e brilho reagem ao som |
-| **FIRE** | Efeito fogo modulado pelo áudio |
-
----
-
-## Calibração do Touch
-
-Se o toque não estiver preciso, ative a calibração:
-
-1. No código `setup()` em `main.cpp`, descomente a linha:
-   ```cpp
-   display.calibrateTouch();
-   ```
-2. Grave novamente no ESP32
-3. Toque nos 4 cantos quando solicitado
-4. Os valores de calibração serão exibidos no Serial Monitor
-5. Atualize os valores em `config.h`:
-   ```cpp
-   #define TOUCH_MIN_X     <valor1>
-   #define TOUCH_MAX_X     <valor2>
-   #define TOUCH_MIN_Y     <valor3>
-   #define TOUCH_MAX_Y     <valor4>
-   ```
+1. Ligue a máquina → ESP32 faz checagem de segurança
+2. Aguarde LED verde (PRONTO)
+3. Selecione o material com **<MAT / MAT>**
+4. Ajuste potência e velocidade se necessário
+5. Use **PULSO** para verificar alinhamento
+6. Toque **LASER ON/OFF** para iniciar corte
+7. LED fica vermelho pulsante durante corte
+8. Toque novamente para desligar
 
 ---
 
@@ -334,27 +264,22 @@ Se o toque não estiver preciso, ative a calibração:
 
 ```
 esp32-radio-bluetooth/
-├── arduino/                    # Versão Arduino IDE
-│   └── esp32_radio_bluetooth/
-│       ├── esp32_radio_bluetooth.ino  # Sketch completo (arquivo único)
-│       └── User_Setup.h               # Config TFT_eSPI (copiar para a lib)
-├── platformio.ini          # Configuração PlatformIO + TFT + Touch
+├── platformio.ini              # Configuração PlatformIO
 ├── include/
-│   ├── config.h            # Pinos, cores Pioneer, constantes
-│   ├── display_ui.h        # Interface Pioneer + Touch
-│   ├── bt_audio.h          # Bluetooth A2DP Sink
-│   └── led_effects.h       # Efeitos LED WS2812B
-├── lib/
-│   └── TEA5767/
-│       ├── TEA5767.h        # Driver FM
-│       └── TEA5767.cpp
+│   ├── config.h                # Pinos, presets, segurança, cores
+│   ├── display_ui.h            # Interface touch industrial
+│   ├── laser_control.h         # Controle do laser + segurança
+│   └── led_effects.h           # LED status strip
 ├── src/
-│   ├── main.cpp            # Firmware principal (touch + LED)
-│   ├── display_ui.cpp      # UI Pioneer + EQ Visualizer + Touch
-│   ├── bt_audio.cpp        # Bluetooth A2DP
-│   └── led_effects.cpp     # Efeitos LED reativos ao som
-└── docs/
-    └── wiring.md           # Conexões detalhadas
+│   ├── main.cpp                # Firmware principal
+│   ├── display_ui.cpp          # UI industrial + touch
+│   ├── laser_control.cpp       # PWM + safety + presets
+│   └── led_effects.cpp         # Efeitos LED de status
+├── docs/
+│   └── wiring.md               # Conexões detalhadas
+└── arduino/
+    └── esp32_radio_bluetooth/
+        └── User_Setup.h        # Config TFT_eSPI
 ```
 
 ## Dependências
@@ -362,47 +287,50 @@ esp32-radio-bluetooth/
 | Biblioteca | Versão | Uso |
 |---|---|---|
 | [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) | ^2.5.34 | Display ILI9341 + Touch XPT2046 |
-| [ESP32-A2DP](https://github.com/pschatzmann/ESP32-A2DP) | v1.8.0 | Bluetooth A2DP Sink |
-| [FastLED](https://github.com/FastLED/FastLED) | ^3.6.0 | WS2812B LED strip |
-| [arduino-audio-tools](https://github.com/pschatzmann/arduino-audio-tools) | latest | I2S output (ESP32 3.x) |
+| [FastLED](https://github.com/FastLED/FastLED) | ^3.6.0 | WS2812B LED status strip |
 
 ## Customização
 
-### Alterar nome Bluetooth
-Em `include/config.h`:
+### Alterar presets de corte
+Em `include/config.h`, modifique o array `CUTTING_PRESETS[]`:
 ```cpp
-#define BT_DEVICE_NAME  "Meu Radio Pioneer"
+{"Aco 4.0mm", 99, 5, true, "O2", 4.0f},
 ```
 
-### Alterar presets FM
-Em `lib/TEA5767/TEA5767.cpp`, no construtor:
+### Alterar limites de segurança
 ```cpp
-float defaultPresets[] = { 89.1, 91.3, 93.7, 96.1, 98.3, 100.9, 101.1, 103.3, 105.1, 107.5 };
+#define WATER_TEMP_MAX      35.0f   // Temperatura máxima (°C)
+#define MAX_CONTINUOUS_CUT  300000  // Tempo máximo corte (ms)
+#define POWER_MAX           99      // Potência máxima (%)
 ```
 
-### Alterar cores
-Em `include/config.h`, modifique as constantes `COLOR_*` (formato RGB565).
-Cores neon para estilo Pioneer: `COLOR_NEON_CYAN`, `COLOR_NEON_BLUE`, `COLOR_NEON_GREEN`.
-
-### Alterar quantidade de LEDs
-Em `include/config.h`:
+### Alterar PWM
 ```cpp
-#define LED_COUNT       60   // Número de LEDs na fita
-#define LED_PIN         13   // Pino de dados
-#define LED_BRIGHTNESS  200  // Brilho inicial (0-255)
+#define LASER_PWM_FREQ      20000   // Frequência (Hz)
+#define LASER_PWM_RESOLUTION 12     // Resolução (bits)
 ```
 
-## Notas Importantes
+---
 
-- **Touch**: O display ILI9341 2.4" V1.3 já inclui o controlador touch XPT2046
-- **SPI compartilhado**: Display e touch usam o mesmo barramento SPI com CS separados
-- **GPIO 34**: Input-only (usado para IRQ do touch, opcional)
-- **Alimentação**: ESP32 + TEA5767 + Display consomem ~300mA. Use fonte de pelo menos 500mA
-- **Antena FM**: Posicione longe do display para melhor recepção
-- **DAC I2S**: Para modo BT, use MAX98357A (com amplificador) ou PCM5102 (saída de linha)
-- **WS2812B**: Alimentar com 5V (fonte externa para >10 LEDs). Usar resistor de 330Ω no pino de dados
-- **ADC**: GPIO 36 (VP) usado para captura de áudio. Usar divisor de tensão com 2x 10kΩ + 100nF
-- **Capacitor 1000µF**: Recomendado na alimentação dos LEDs WS2812B para evitar picos
+## ⚠️ AVISOS DE SEGURANÇA
+
+1. **SEMPRE use óculos de proteção** adequados para CO2 (OD5+ @ 10.6µm)
+2. **NUNCA opere sem fluxo de água** — o tubo CO2 queima em segundos
+3. **Use optoacopladores** entre ESP32 e PSU laser (isolamento galvânico)
+4. **O botão E-STOP físico deve funcionar INDEPENDENTE do ESP32** — cabeie diretamente na PSU como segurança adicional
+5. **Ventilação obrigatória** — fumos metálicos são tóxicos
+6. **Este painel é AUXILIAR** — não substitui o controlador principal (Ruida) para movimentação dos eixos
+
+---
+
+## Comunicação com Ruida (Opcional)
+
+O ESP32 pode se comunicar via UART com a controladora Ruida RDC6445/6442:
+- GPIO 16 (RX) ← Ruida TX
+- GPIO 17 (TX) → Ruida RX
+- Baud: 115200
+
+Isso permite receber feedback de posição e status da controladora principal.
 
 ## Licença
 

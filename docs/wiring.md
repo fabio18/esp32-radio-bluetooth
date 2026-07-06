@@ -1,173 +1,182 @@
-# Diagrama de Conexões Detalhado
+# Diagrama de Conexões — ESP32 Kindlelaser Max 260W
 
-## Lista de Materiais (BOM)
+## Conexão com a PSU do Laser
 
-| Qtd | Componente | Observação |
-|-----|------------|------------|
-| 1 | ESP32 DevKit V1 (30 pinos) | Ou versão 38 pinos |
-| 1 | TEA5767 Módulo FM | Com antena incluída |
-| 1 | Display TFT ILI9341 2.4" V1.3 | 240x320, SPI, **com touch XPT2046** |
-| 1 | Fita LED WS2812B (30 LEDs) | Endereçável, 5V |
-| 1 | DAC I2S MAX98357A ou PCM5102 | Para saída de áudio BT |
-| 1 | Amplificador PAM8403 | Para saída de áudio FM |
-| 2 | Alto-falante 3W 4Ω | Estéreo |
-| 2 | Resistor 10kΩ | Divisor de tensão ADC |
-| 1 | Resistor 330Ω | Proteção pino de dados WS2812B |
-| 1 | Capacitor 100nF | Filtro ADC |
-| 1 | Capacitor 1000µF | Proteção alimentação LEDs |
-| 1 | Protoboard ou PCB | Para montagem |
-| - | Fios jumper | Macho-macho e macho-fêmea |
-| 1 | Fonte 5V 2A | USB ou externa (LEDs consomem mais) |
+A PSU (fonte de alimentação) da Kindlelaser Max 260W possui as seguintes entradas de controle:
 
-> **Sem botões físicos!** O display ILI9341 2.4" V1.3 já inclui controlador touch XPT2046.
+| Pino PSU | Função | Conexão ESP32 |
+|---|---|---|
+| **IN** | Controle de potência (0-5V analógico) | GPIO 25 via conversor de nível |
+| **L-ON** | Laser Enable (ativo LOW ou HIGH conforme modelo) | GPIO 26 via optoacoplador |
+| **G** (GND) | Referência | GND comum |
+| **5V** | Saída 5V da PSU (pode alimentar ESP32) | VIN do ESP32 |
+| **WP** | Water Protect (entrada para sensor de fluxo) | Conectar sensor diretamente |
 
-## Pinout ESP32 DevKit
+### Circuito de Potência (PWM → 0-5V)
 
 ```
-                    ┌───────────────────┐
-                    │    ESP32 DevKit    │
-                    │                   │
-              3V3 ──┤ 3V3         VIN ├── 5V
-              GND ──┤ GND         GND ├── GND
-    Display CS   ──┤ GPIO15     GPIO13├── WS2812B Data
-               ──┤ GPIO2(DC)   GPIO12├──
-    Display RST ──┤ GPIO4      GPIO14├──
-     I2S BCLK  ──┤ GPIO5      GPIO27├── Touch CS (XPT2046)
-               ──┤ GPIO18(SCK) GPIO26├──
-    Display MOSI──┤ GPIO23     GPIO25├──
-    Display MISO──┤ GPIO19     GPIO33├──
-               ──┤ GPIO22(SCL) GPIO32├──
-    I2C SCL    ──┤ GPIO22     GPIO35├──
-    I2C SDA    ──┤ GPIO21     GPIO34├── Touch IRQ (opcional)
-    I2S DOUT   ──┤ GPIO16     GPIO39├──
-    I2S LRC    ──┤ GPIO17     GPIO36├── Audio ADC In (VP)
-                    └───────────────────┘
+ESP32 GPIO 25 ──[330Ω]──┬── Conversor de Nível (3.3V → 5V)
+                         │   (ex: TXS0108E, ou transistor + pull-up 5V)
+                         │
+                         └── [Filtro RC: 1kΩ + 100nF] ──→ PSU "IN"
+                              (converte PWM em tensão analógica suave)
 ```
 
-## Conexão TEA5767 (I2C)
-
+**Alternativa simples (sem conversor):**
 ```
-    TEA5767 Module
-    ┌─────────────┐
-    │ VCC ────────┤──── 3.3V
-    │ GND ────────┤──── GND
-    │ SDA ────────┤──── GPIO 21 (com pull-up 4.7kΩ para 3.3V)
-    │ SCL ────────┤──── GPIO 22 (com pull-up 4.7kΩ para 3.3V)
-    │ Audio L ────┤──── Amplificador Left In
-    │ Audio R ────┤──── Amplificador Right In
-    └─────────────┘
+ESP32 GPIO 25 ──[PWM 20kHz]──[10kΩ]──┬──[100nF]── GND
+                                      │
+                                      └── LM358 (buffer opamp, Vcc=5V) ──→ PSU "IN"
 ```
 
-## Conexão Display ILI9341 + Touch XPT2046 (SPI)
-
-O display ILI9341 2.4" V1.3 já tem o touch XPT2046 integrado.
-Ambos compartilham o barramento SPI (MOSI, MISO, SCK) com CS separados.
+### Circuito de Enable (Optoacoplador)
 
 ```
-    ILI9341 TFT 2.4" com Touch
-    ┌─────────────────┐
-    │ VCC ────────────┤──── 3.3V
-    │ GND ────────────┤──── GND
-    │ CS  ────────────┤──── GPIO 15  (Display CS)
-    │ RESET ──────────┤──── GPIO 4
-    │ DC  ────────────┤──── GPIO 2
-    │ SDI(MOSI) ──────┤──── GPIO 23  (SPI compartilhado)
-    │ SCK ────────────┤──── GPIO 18  (SPI compartilhado)
-    │ LED ────────────┤──── 3.3V     (sempre ligado)
-    │ SDO(MISO) ──────┤──── GPIO 19  (SPI compartilhado)
-    │                 │
-    │ T_CLK ──────────┤──── GPIO 18  (compartilhado com SCK)
-    │ T_CS  ──────────┤──── GPIO 27  (Touch CS)
-    │ T_DIN ──────────┤──── GPIO 23  (compartilhado com MOSI)
-    │ T_DO  ──────────┤──── GPIO 19  (compartilhado com MISO)
-    │ T_IRQ ──────────┤──── GPIO 34  (opcional, input-only)
-    └─────────────────┘
+ESP32 GPIO 26 ──[1kΩ]──→ LED do 4N35
+                          │
+                          GND
+
+                    4N35 Fototransistor:
+                    Coletor ──→ PSU "L-ON"
+                    Emissor ──→ PSU "G" (GND)
 ```
 
-## Conexão WS2812B LED Strip
+> **IMPORTANTE**: O optoacoplador é OBRIGATÓRIO! A PSU do laser tem alta tensão
+> (20-40kV no tubo). Sem isolamento, um curto ou pico pode destruir o ESP32.
+
+---
+
+## Sensores de Segurança
+
+### Sensor de Fluxo de Água (YF-S201 ou similar)
 
 ```
-    WS2812B LED Strip (30 LEDs)
-    ┌─────────────────┐
-    │                 │
-    │ DIN ──[330Ω]───┤──── GPIO 13
-    │ VCC ────────────┤──── 5V (fonte externa)
-    │ GND ────────────┤──── GND (compartilhado com ESP32)
-    │                 │
-    └─────────────────┘
-
-    Importante:
-    - Capacitor 1000µF entre VCC e GND perto da fita LED
-    - Resistor 330Ω no pino DIN para proteção
-    - Se usar mais de 10 LEDs, use fonte 5V externa (não alimentar pelo ESP32)
-    - Cada LED consome até 60mA no brilho máximo (30 LEDs = até 1.8A)
+YF-S201         ESP32
+───────         ─────
+VCC (vermelho)  5V (ou 3.3V para modelos 3.3V)
+GND (preto)     GND
+Signal (amarelo) GPIO 33 (com pull-up interno ativado)
 ```
 
-## Entrada de Áudio para LED (Divisor de Tensão)
+O sensor gera pulsos quando há fluxo. O firmware verifica se há atividade.
+Condição segura: GPIO 33 = LOW (com pull-up, o sensor puxa para LOW quando ativo).
 
-Para que os LEDs reajam ao som, conecte a saída de áudio ao ADC:
+### Chave de Tampa (Microswitch NC)
 
 ```
-    Saída de Áudio
-    (do amplificador)
-         │
-      [10kΩ]  ─── Resistor 1
-         │
-         ├──────── GPIO 36 (VP / ADC1_CH0)
-         │
-      [10kΩ]  ─── Resistor 2
-         │
-      [100nF] ─── Capacitor filtro
-         │
-        GND
+Microswitch NC (normalmente fechado)
+───────────────
+COM  ──→ GND
+NC   ──→ GPIO 32 (INPUT_PULLUP)
 ```
 
-> **Nota**: GPIO 36 (VP) é ADC1, sem conflito com Wi-Fi/Bluetooth.
-> O divisor de tensão reduz o sinal de áudio para a faixa segura do ADC (0-3.3V).
-> O capacitor de 100nF filtra ruído de alta frequência.
+- Tampa fechada: GPIO 32 = LOW (microswitch conecta COM a NC)
+- Tampa aberta: GPIO 32 = HIGH (pull-up sem conexão)
 
-## Conexão DAC I2S (para áudio Bluetooth)
+### Botão de Emergência (NC - Normalmente Fechado)
 
-### Opção 1: MAX98357A (amplificador I2S com saída de speaker)
 ```
-    MAX98357A
-    ┌─────────────┐
-    │ VIN ────────┤──── 5V
-    │ GND ────────┤──── GND
-    │ BCLK ───────┤──── GPIO 5
-    │ LRC ────────┤──── GPIO 17
-    │ DIN ────────┤──── GPIO 16
-    │ GAIN ───────┤──── (não conectar = 9dB)
-    │ SD  ────────┤──── (não conectar = ativo)
-    │ Speaker+ ───┤──── Alto-falante +
-    │ Speaker- ───┤──── Alto-falante -
-    └─────────────┘
+E-STOP (botão cogumelo NC)
+──────────────────────────
+COM  ──→ 3.3V
+NC   ──→ GPIO 39 (VN)
+         + [10kΩ] pull-down para GND
 ```
 
-### Opção 2: PCM5102 (DAC I2S com saída de linha)
+- Normal: GPIO 39 = HIGH (botão NC passa 3.3V)
+- Pressionado: GPIO 39 = LOW (circuito aberto, pull-down leva a LOW)
+
+> **Nota**: GPIO 39 é input-only, não tem pull-up interno. Use resistor externo.
+
+### Sensor de Temperatura (NTC 10kΩ)
+
 ```
-    PCM5102
-    ┌─────────────┐
-    │ VCC ────────┤──── 3.3V
-    │ GND ────────┤──── GND
-    │ BCK ────────┤──── GPIO 5
-    │ LRCK ───────┤──── GPIO 17
-    │ DIN ────────┤──── GPIO 16
-    │ SCK ────────┤──── GND
-    │ FMT ────────┤──── GND (I2S standard)
-    │ XSMT ───────┤──── 3.3V (unmute)
-    │ Audio L ────┤──── Para amplificador
-    │ Audio R ────┤──── Para amplificador
-    └─────────────┘
+3.3V ──[10kΩ fixo]──┬──[NTC 10kΩ]── GND
+                    │
+                    └── GPIO 35 (ADC1_CH7)
 ```
 
-## Dicas de Montagem
+Fórmula de conversão (Beta equation) implementada no firmware:
+- Beta: 3950
+- Resistência nominal: 10kΩ @ 25°C
 
-1. **Alimentação**: Use fonte 5V 2A. LEDs WS2812B podem consumir até 1.8A (30 LEDs)
-2. **Capacitor nos LEDs**: 1000µF na alimentação dos LEDs para evitar picos de corrente
-3. **I2C Pull-ups**: Adicione resistores de 4.7kΩ pull-up nos pinos SDA e SCL para 3.3V
-4. **Antena FM**: Posicione a antena do TEA5767 longe do display e ESP32 para reduzir interferência
-5. **Aterramento**: Use um plano de GND comum para todos os componentes
-6. **Cabos de áudio**: Use cabo blindado para as conexões de áudio do TEA5767
-7. **Resistor 330Ω**: Sempre usar no pino de dados do WS2812B para proteção
-8. **Distância dos LEDs**: Se a fita LED estiver longe do ESP32, use cabo curto no pino de dados
+---
+
+## Relés de Controle
+
+### Ar Comprimido
+
+```
+ESP32 GPIO 14 ──→ Módulo Relé 5V (IN1)
+                     │
+                     └── Solenoide 24V (ar comprimido)
+                         Alimentado por fonte separada 24V
+```
+
+### Exaustor
+
+```
+ESP32 GPIO 12 ──→ Módulo Relé 5V (IN2)
+                     │
+                     └── Contator → Motor exaustor 220V
+```
+
+> **ATENÇÃO**: Para 220V, use contator adequado e fiação conforme normas elétricas.
+
+---
+
+## Display TFT + Touch (mesmo do projeto original)
+
+| ILI9341 | ESP32 | Função |
+|---|---|---|
+| MOSI | GPIO 23 | SPI Data |
+| MISO | GPIO 19 | SPI Data |
+| SCK | GPIO 18 | SPI Clock |
+| CS | GPIO 15 | Chip Select Display |
+| DC | GPIO 2 | Data/Command |
+| RST | GPIO 4 | Reset |
+| T_CS | GPIO 27 | Touch Chip Select |
+| T_IRQ | GPIO 34 | Touch Interrupt |
+
+---
+
+## WS2812B LED Strip
+
+| WS2812B | ESP32 | Nota |
+|---|---|---|
+| DIN | GPIO 13 | Com resistor 330Ω em série |
+| VCC | 5V | Fonte externa para >10 LEDs |
+| GND | GND | Compartilhado |
+
+Capacitor 1000µF na alimentação recomendado.
+
+---
+
+## Alimentação
+
+| Componente | Tensão | Corrente |
+|---|---|---|
+| ESP32 | 5V (via USB ou VIN) | ~200mA |
+| Display ILI9341 | 3.3V (do ESP32) | ~80mA |
+| WS2812B (30 LEDs) | 5V (fonte externa) | até 1.8A |
+| Módulo relé | 5V | ~100mA |
+| Sensor fluxo | 5V ou 3.3V | ~15mA |
+
+**Recomendação**: Fonte 5V 3A para ESP32 + LEDs + relé.
+A PSU do laser geralmente fornece 5V/24V para acessórios.
+
+---
+
+## Comunicação UART com Ruida (Opcional)
+
+Se a máquina usar controladora Ruida RDC6445/6442:
+
+```
+ESP32 GPIO 17 (TX) ──→ Ruida RX
+ESP32 GPIO 16 (RX) ←── Ruida TX
+GND ─────────────────── GND (comum)
+```
+
+Baud: 115200, 8N1
+
+Permite receber: posição X/Y, status de operação, feedback.
