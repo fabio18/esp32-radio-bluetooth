@@ -1,133 +1,41 @@
 /**
- * ESP32 Radio Bluetooth - Pioneer Style
+ * ESP32 Kindlelaser Max 260W - Metal Cutting Controller
  *
- * Firmware principal - controle 100% por tela touch
- *  - Módulo FM TEA5767 (I2C)
- *  - Display TFT ILI9341 2.4" 240x320 com Touch XPT2046 (SPI)
- *  - Bluetooth A2DP Sink para conexão com Alexa
- *  - LED WS2812B reativo ao som
- *  - Visual estilo Pioneer automotivo
+ * Painel de controle touch para corte de metal com laser CO2
+ *  - Display TFT ILI9341 2.4" com Touch XPT2046 (SPI)
+ *  - Controle de potência PWM (0-99%)
+ *  - Controle de velocidade de corte (mm/s)
+ *  - Presets de materiais (Aço, Inox, Alumínio)
+ *  - Monitoramento de segurança (água, tampa, temperatura, E-stop)
+ *  - LED WS2812B para indicação de status
+ *  - Comunicação UART com controladora Ruida (opcional)
+ *
+ * SEGURANÇA:
+ *  - Laser NUNCA liga sem fluxo de água confirmado
+ *  - Laser DESLIGA se tampa abrir durante operação
+ *  - E-STOP desliga TUDO imediatamente
+ *  - Temperatura da água monitorada continuamente
+ *  - Tempo máximo de corte contínuo: 5 minutos
  */
 
 #include <Arduino.h>
 #include "config.h"
 #include "display_ui.h"
-#include "bt_audio.h"
+#include "laser_control.h"
 #include "led_effects.h"
-#include "TEA5767.h"
 
 // ============================================
 // Global Objects
 // ============================================
-TEA5767     radio;
-DisplayUI   display;
-BTAudio     btAudio;
-LEDEffects  ledStrip;
-
-RadioMode   currentMode = MODE_FM;
-uint8_t     volume = VOLUME_DEFAULT;
-bool        muted = false;
-bool        btStarted = false;
+LaserControl laser;
+DisplayUI    display;
+LEDEffects   ledStrip;
 
 // ============================================
 // Timing
 // ============================================
-unsigned long lastStatusRead = 0;
-
-// ============================================
-// Bluetooth Callbacks
-// ============================================
-void onBTConnection(bool connected) {
-    if (currentMode == MODE_BLUETOOTH) {
-        display.updateBTStatus(connected, btAudio.getConnectedDeviceName());
-    }
-}
-
-void onBTPlayback(bool playing) {
-    if (currentMode == MODE_BLUETOOTH) {
-        display.updatePlayStatus(playing);
-    }
-}
-
-// ============================================
-// Mode Switching
-// ============================================
-void switchToFM() {
-    currentMode = MODE_FM;
-    Serial.println("[MAIN] Modo FM");
-
-    if (btStarted) {
-        btAudio.end();
-        btStarted = false;
-        delay(500);
-    }
-
-    radio.setStandby(false);
-
-    TEA5767_Status status = radio.getStatus();
-    display.drawFMScreen(
-        radio.getFrequency(),
-        status.stereo,
-        status.signalLevel,
-        muted,
-        radio.getCurrentPresetIndex(),
-        radio.getPresetCount(),
-        volume,
-        ledStrip.getEffectName()
-    );
-}
-
-void switchToBluetooth() {
-    currentMode = MODE_BLUETOOTH;
-    Serial.println("[MAIN] Modo Bluetooth");
-
-    radio.setStandby(true);
-
-    if (!btStarted) {
-        btAudio.begin(BT_DEVICE_NAME);
-        btAudio.setConnectionCallback(onBTConnection);
-        btAudio.setPlaybackCallback(onBTPlayback);
-        btAudio.setVolume(volume);
-        btStarted = true;
-    }
-
-    display.drawBluetoothScreen(
-        btAudio.isConnected(),
-        btAudio.getConnectedDeviceName(),
-        muted,
-        volume,
-        btAudio.isPlaying(),
-        ledStrip.getEffectName()
-    );
-}
-
-// ============================================
-// Volume Control
-// ============================================
-void adjustVolume(int delta) {
-    int newVol = (int)volume + delta;
-    if (newVol < 0) newVol = 0;
-    if (newVol > VOLUME_MAX) newVol = VOLUME_MAX;
-    volume = (uint8_t)newVol;
-
-    if (currentMode == MODE_BLUETOOTH && btStarted) {
-        btAudio.setVolume(volume);
-    }
-
-    display.updateVolume(volume);
-    Serial.printf("[MAIN] Volume: %d%%\n", volume);
-}
-
-void toggleMute() {
-    muted = !muted;
-
-    if (currentMode == MODE_FM) {
-        radio.setMute(muted);
-    }
-
-    display.updateMuteIndicator(muted);
-    Serial.printf("[MAIN] Mute: %s\n", muted ? "ON" : "OFF");
-}
+unsigned long lastDisplayUpdate = 0;
+unsigned long lastStatusUpdate = 0;
 
 // ============================================
 // Touch Handling
@@ -137,92 +45,70 @@ void handleTouch() {
     if (btn == BTN_NONE) return;
 
     switch (btn) {
-    case BTN_MODE:
-        if (currentMode == MODE_FM) switchToBluetooth();
-        else switchToFM();
+    case BTN_POWER_UP:
+        laser.adjustPower(POWER_STEP);
+        display.updatePower(laser.getPower(), laser.getPowerWatts());
         break;
 
-    case BTN_SEEK_UP:
-        if (currentMode == MODE_FM) {
-            display.showSeekingAnimation();
-            radio.seekUp();
-            TEA5767_Status s = radio.getStatus();
-            display.updateFrequency(radio.getFrequency());
-            display.updateSignalLevel(s.signalLevel);
-            display.updateStereoIndicator(s.stereo);
-            Serial.printf("[FM] Seek >> %.1f MHz\n", radio.getFrequency());
+    case BTN_POWER_DOWN:
+        laser.adjustPower(-POWER_STEP);
+        display.updatePower(laser.getPower(), laser.getPowerWatts());
+        break;
+
+    case BTN_SPEED_UP:
+        laser.adjustSpeed(SPEED_STEP);
+        display.updateSpeed(laser.getSpeed());
+        break;
+
+    case BTN_SPEED_DOWN:
+        laser.adjustSpeed(-SPEED_STEP);
+        display.updateSpeed(laser.getSpeed());
+        break;
+
+    case BTN_LASER_TOGGLE:
+        if (laser.isLaserOn()) {
+            laser.laserOff();
+        } else {
+            laser.laserOn();
+        }
+        display.updateLaserStatus(laser.isLaserOn(), laser.getMode());
+        break;
+
+    case BTN_AIR_TOGGLE:
+        laser.toggleAirAssist();
+        display.updateAirStatus(laser.isAirAssistOn());
+        break;
+
+    case BTN_MATERIAL_NEXT:
+        laser.nextPreset();
+        display.updatePreset(laser.getCurrentPreset(), laser.getCurrentPresetIndex());
+        display.updatePower(laser.getPower(), laser.getPowerWatts());
+        display.updateSpeed(laser.getSpeed());
+        break;
+
+    case BTN_MATERIAL_PREV:
+        laser.prevPreset();
+        display.updatePreset(laser.getCurrentPreset(), laser.getCurrentPresetIndex());
+        display.updatePower(laser.getPower(), laser.getPowerWatts());
+        display.updateSpeed(laser.getSpeed());
+        break;
+
+    case BTN_TEST_PULSE:
+        if (!laser.isLaserOn()) {
+            display.showMessage("PULSO TESTE...", COLOR_NEON_YELLOW);
+            laser.testPulse(100);
+            display.showMessage("PULSO OK", COLOR_NEON_GREEN);
         }
         break;
 
-    case BTN_SEEK_DOWN:
-        if (currentMode == MODE_FM) {
-            display.showSeekingAnimation();
-            radio.seekDown();
-            TEA5767_Status s = radio.getStatus();
-            display.updateFrequency(radio.getFrequency());
-            display.updateSignalLevel(s.signalLevel);
-            display.updateStereoIndicator(s.stereo);
-            Serial.printf("[FM] Seek << %.1f MHz\n", radio.getFrequency());
-        }
+    case BTN_EXHAUST_TOGGLE:
+        laser.toggleExhaust();
+        display.updateExhaustStatus(laser.isExhaustOn());
         break;
 
-    case BTN_PRESET_NEXT:
-        if (currentMode == MODE_FM) {
-            radio.nextPreset();
-            display.updateFrequency(radio.getFrequency());
-            display.updatePresetInfo(
-                radio.getCurrentPresetIndex(),
-                radio.getFrequency(),
-                radio.getPresetCount()
-            );
-            Serial.printf("[FM] Preset >> %.1f MHz\n", radio.getFrequency());
-        }
-        break;
-
-    case BTN_PRESET_PREV:
-        if (currentMode == MODE_FM) {
-            radio.prevPreset();
-            display.updateFrequency(radio.getFrequency());
-            display.updatePresetInfo(
-                radio.getCurrentPresetIndex(),
-                radio.getFrequency(),
-                radio.getPresetCount()
-            );
-            Serial.printf("[FM] Preset << %.1f MHz\n", radio.getFrequency());
-        }
-        break;
-
-    case BTN_VOL_UP:
-        adjustVolume(VOLUME_STEP);
-        break;
-
-    case BTN_VOL_DOWN:
-        adjustVolume(-VOLUME_STEP);
-        break;
-
-    case BTN_MUTE:
-        toggleMute();
-        break;
-
-    case BTN_PLAY_PAUSE:
-        if (currentMode == MODE_BLUETOOTH && btStarted) {
-            if (btAudio.isPlaying()) btAudio.pause();
-            else btAudio.play();
-        }
-        break;
-
-    case BTN_LED_MODE:
-        ledStrip.nextEffect();
-        display.showMessage(ledStrip.getEffectName(), COLOR_NEON_MAGENTA);
-        break;
-
-    case BTN_LED_BRIGHT:
-        ledStrip.cycleBrightness();
-        {
-            char msg[20];
-            snprintf(msg, sizeof(msg), "LED: %d%%", ledStrip.getBrightness() * 100 / 255);
-            display.showMessage(msg, COLOR_NEON_MAGENTA);
-        }
+    case BTN_ESTOP:
+        laser.emergencyStop();
+        display.showError("PARADA DE EMERGENCIA!");
         break;
 
     default:
@@ -231,14 +117,57 @@ void handleTouch() {
 }
 
 // ============================================
-// Periodic Status Update
+// Safety Status Update
 // ============================================
-void updateRadioStatus() {
-    if (currentMode != MODE_FM) return;
+void updateSafetyDisplay() {
+    display.updateSafety(
+        laser.isWaterFlowOK(),
+        laser.isLidClosed(),
+        laser.isEstopOK(),
+        laser.getWaterTemp(),
+        laser.isTempWarning()
+    );
 
-    TEA5767_Status status = radio.getStatus();
-    display.updateSignalLevel(status.signalLevel);
-    display.updateStereoIndicator(status.stereo);
+    // Update mode display
+    display.updateLaserStatus(laser.isLaserOn(), laser.getMode());
+
+    // Show error message if in error mode
+    if (laser.getMode() == MODE_ERROR) {
+        display.showError(laser.getErrorMessage());
+    }
+}
+
+// ============================================
+// LED Status Update
+// ============================================
+void updateLEDStatus() {
+    LEDStatus status;
+
+    switch (laser.getMode()) {
+    case MODE_IDLE:
+        status = LED_STATUS_IDLE;
+        break;
+    case MODE_READY:
+        status = LED_STATUS_READY;
+        break;
+    case MODE_CUTTING:
+        status = LED_STATUS_CUTTING;
+        break;
+    case MODE_WARMUP:
+        status = LED_STATUS_READY;
+        break;
+    case MODE_PAUSED:
+        status = LED_STATUS_WARNING;
+        break;
+    case MODE_ERROR:
+        status = LED_STATUS_ERROR;
+        break;
+    default:
+        status = LED_STATUS_OFF;
+        break;
+    }
+
+    ledStrip.setStatus(status);
 }
 
 // ============================================
@@ -246,33 +175,44 @@ void updateRadioStatus() {
 // ============================================
 void setup() {
     Serial.begin(115200);
-    Serial.println("\n=== ESP32 Radio - Pioneer Style ===");
-    Serial.println("Touch + LED WS2812B reativo ao som");
+    Serial.println("\n=== ESP32 Kindlelaser Max 260W Controller ===");
+    Serial.println("Painel de controle touch para corte de metal");
 
     // Initialize display + touch
     Serial.println("[INIT] Display TFT ILI9341 + Touch...");
     display.begin();
     display.drawSplashScreen();
 
-    // Initialize FM radio
-    Serial.println("[INIT] Radio FM TEA5767...");
-    bool radioOk = radio.begin(I2C_SDA, I2C_SCL);
-    if (radioOk) {
-        Serial.println("[INIT] TEA5767 OK");
-    } else {
-        Serial.println("[INIT] TEA5767 FALHA - verifique I2C");
-        display.showMessage("TEA5767 nao encontrado!", COLOR_NEON_RED);
-        delay(2000);
-    }
+    // Initialize laser control
+    Serial.println("[INIT] Laser control system...");
+    laser.begin();
 
     // Initialize LED strip
-    Serial.println("[INIT] LED WS2812B...");
+    Serial.println("[INIT] LED status strip...");
     ledStrip.begin();
 
-    // Start in FM mode
-    switchToFM();
+    // Load first preset
+    laser.loadPreset(0);
+
+    // Draw main screen
+    delay(2000); // Show splash
+    display.drawMainScreen(
+        laser.getPower(),
+        laser.getPowerWatts(),
+        laser.getSpeed(),
+        laser.getCurrentPreset(),
+        laser.getCurrentPresetIndex(),
+        laser.isLaserOn(),
+        laser.isAirAssistOn(),
+        laser.isExhaustOn(),
+        laser.getMode()
+    );
+
+    // Initial safety display
+    updateSafetyDisplay();
 
     Serial.println("[INIT] Sistema pronto!");
+    Serial.println("[INIT] Aguardando condições de segurança...");
 }
 
 // ============================================
@@ -284,16 +224,27 @@ void loop() {
     // Handle touch input
     handleTouch();
 
-    // Update EQ visualizer on display
-    display.updateEQ();
+    // Update laser safety (critical - runs every cycle)
+    laser.update();
 
-    // Update LED strip (reads audio + applies effect)
+    // Update LED status strip
     ledStrip.update();
+    updateLEDStatus();
 
-    // Update radio status periodically
-    if (now - lastStatusRead >= STATUS_READ_MS) {
-        lastStatusRead = now;
-        updateRadioStatus();
+    // Update display periodically
+    if (now - lastDisplayUpdate >= DISPLAY_UPDATE_MS) {
+        lastDisplayUpdate = now;
+
+        // Update cutting time if active
+        if (laser.getMode() == MODE_CUTTING) {
+            display.updateCuttingTime(laser.getCuttingTime());
+        }
+    }
+
+    // Update safety status display
+    if (now - lastStatusUpdate >= STATUS_READ_MS) {
+        lastStatusUpdate = now;
+        updateSafetyDisplay();
     }
 
     delay(5);
